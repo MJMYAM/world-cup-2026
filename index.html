@@ -784,14 +784,18 @@ function resetFilters(){
 function renderGroups(){
   var el=document.getElementById("groupGrid");
   el.innerHTML=Object.keys(GROUPS).map(function(g){
-    // حساب ترتيب تقديري: نقاط من نتائج ESPN + فارق أهداف
+    // بناء stats لكل فريق
     var stats={};
     GROUPS[g].forEach(function(t){stats[t]={t:t,p:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0};});
+
+    // حساب من نتائج ESPN الحقيقية (للمباريات المنتهية)
+    var hasRealResults=false;
     M.forEach(function(m){
       if(m.g!==g)return;
       var sc=SC_CACHE[m.n];
       if(!sc||!sc.found||sc.status!=="finished")return;
       if(!stats[m.h]||!stats[m.a])return;
+      hasRealResults=true;
       stats[m.h].p++; stats[m.a].p++;
       stats[m.h].gf+=sc.sh; stats[m.h].ga+=sc.sa;
       stats[m.a].gf+=sc.sa; stats[m.a].ga+=sc.sh;
@@ -800,6 +804,20 @@ function renderGroups(){
       else{stats[m.h].d++;stats[m.a].d++;stats[m.h].pts+=1;stats[m.a].pts+=1;}
     });
     Object.keys(stats).forEach(function(k){stats[k].gd=stats[k].gf-stats[k].ga;});
+
+    // لو ما في نتائج بعد، نعطي "نقاط افتراضية" مبنية على قوة المنتخب
+    // (مقياس: 4 للهالكبير، 3 للقوي، 2 للمتوسط، 1 للضعيف)
+    if(!hasRealResults){
+      // قائمة مرجعية للمنتخبات الكبيرة (مقياس مبسط)
+      var bigTeams=["البرازيل","الأرجنتين","فرنسا","ألمانيا","إسبانيا","إنجلترا","البرتغال","هولندا","إيطاليا","بلجيكا","الأوروغواي","المكسيك","الولايات المتحدة","كرواتيا","المغرب"];
+      var strongTeams=["السعودية","اليابان","كوريا الجنوبية","كولومبيا","سويسرا","تونس","السنغال","إيران","النرويج","الدنمارك","البيرو","تشيلي","الجزائر","مصر","الإكوادور"];
+      Object.keys(stats).forEach(function(t){
+        if(bigTeams.indexOf(t)!==-1)stats[t].pts=4;
+        else if(strongTeams.indexOf(t)!==-1)stats[t].pts=3;
+        else if(GROUPS[g].indexOf(t)===0)stats[t].pts=3; // الأول في القرعة = مرشح
+        else stats[t].pts=2;
+      });
+    }
 
     // الترتيب: نقاط أولاً، ثم فارق أهداف، ثم أهداف مسجلة، ثم اسم
     var sorted=Object.values(stats).sort(function(a,b){
@@ -812,9 +830,9 @@ function renderGroups(){
     var rows=sorted.map(function(s,i){
       var pos=i+1;
       var pcls=pos<=2?"q":(pos===3?"m3":"");
-      var pstat=(s.w+s.d+s.l)>0?
-        '<span style="font-size:10px;color:var(--dim);margin-right:auto"><b style="color:var(--gold2)">'+s.pts+'</b> نقط · '+s.gd+(s.gd>0?"+":(s.gd===0?"±":"−")+s.gd)+'</span>':
-        '<span style="font-size:10px;color:var(--dim);margin-right:auto">لم يلعب</span>';
+      var pstat=hasRealResults?
+        '<span style="font-size:10px;color:var(--dim);margin-right:auto"><b style="color:var(--gold2)">'+s.pts+'</b> نقط · فارق '+(s.gd>0?"+":"")+s.gd+'</span>':
+        '<span style="font-size:10px;color:var(--dim);margin-right:auto">تقديري · لم تبدأ</span>';
       return'<div class="trow" data-team="'+s.t+'"><span class="ltr" style="width:22px;height:22px;border-radius:7px;font-size:11px;background:'+(pcls==="q"?"rgba(46,204,113,.22);color:#7ee2ab":(pcls==="m3"?"rgba(240,194,75,.2);color:var(--gold2)":"rgba(255,255,255,.08);color:var(--mut)"))+';display:grid;place-items:center;font-weight:800;font-family:Changa">'+pos+'</span><span class="fl">'+flagImg(s.t)+'</span><span class="tn">'+s.t+'</span>'+pstat+'<span class="go">‹</span></div>';
     }).join("");
     return'<div class="grp"><span class="big">'+g+'</span><h3><span class="ltr">'+g+'</span>المجموعة '+g+'</h3>'+rows
