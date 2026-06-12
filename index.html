@@ -805,7 +805,7 @@ function renderGroups(){
     });
     Object.keys(stats).forEach(function(k){stats[k].gd=stats[k].gf-stats[k].ga;});
 
-    // لو ما في نتائج بعد، نعطي "نقاط افتراضية" مبنية على تصنيف FIFA (مبسّط)
+    // لو ما في نتائج بعد، نعطي "نقاط + أهداف افتراضية" مبنية على تصنيف FIFA
     if(!hasRealResults){
       // تصنيف FIFA مبسّط (رقم أصغر = أقوى)
       var FIFA_RANK={
@@ -815,20 +815,27 @@ function renderGroups(){
         "كوريا الجنوبية":22,"تشيلي":23,"السويد":24,"بولندا":25,"النرويج":26,"بيرو":27,"الجزائر":28,
         "صربيا":29,"تونس":30,"الإكوادور":31,"السعودية":32,"مصر":33,"مالي":34,"كندا":35,
         "بنما":36,"قطر":37,"كوت ديفوار":38,"نيوزيلندا":39,"أستراليا":40,"الإمارات":41,
-        "العراق":42,"الصين":43,"الإكوادور":44,
-        // بقية الفرق: ترتيب متوسط
+        "العراق":42,"الصين":43,"جنوب أفريقيا":50,"التشيك":55,"هايتي":80,"الرأس الأخضر":70,
+        "أوزبكستان":60,"الأردن":75,"الكونغو الديمقراطية":85,"غانا":65,"الباراغواي":60,
+        "كوراساو":90,"البوسنة والهرسك":50,"تركيا":45
       };
-      // الأساس: 100 نقطة تنقص 1 لكل مركز في الترتيب
+      // نحسب نقاط وأهداف افتراضية من FIFA
       Object.keys(stats).forEach(function(t){
-        var rank=FIFA_RANK[t];
-        if(rank)stats[t].pts=100-rank; // الأقوى = نقاط أكثر
-        else stats[t].pts=50; // غير معروف = متوسط
+        var rank=FIFA_RANK[t]||100;
+        // نقاط افتراضية: من 9 إلى 0 حسب القوة
+        if(rank<=15)stats[t].pts=9;
+        else if(rank<=30)stats[t].pts=6;
+        else if(rank<=50)stats[t].pts=4;
+        else if(rank<=70)stats[t].pts=2;
+        else stats[t].pts=1;
+        // أهداف افتراضية: المسجلة = نقاط، المستقبلة = نقاط الخصم
+        stats[t].gf=stats[t].pts;
+        stats[t].ga=Math.max(0, 10-stats[t].pts);
+        stats[t].gd=stats[t].gf-stats[t].ga;
       });
     }
 
-    // الترتيب: نقاط تنازلياً، فارق أهداف، أهداف مسجلة، تصنيف FIFA، ثم القرعة
-    var originalOrder={};
-    GROUPS[g].forEach(function(t,i){originalOrder[t]=i;});
+    // الترتيب: نقاط تنازلياً، فارق أهداف، أهداف مسجلة، تصنيف FIFA
     var FIFA_RANK_LOOKUP={
       "الأرجنتين":1,"فرنسا":2,"إنجلترا":3,"البرازيل":4,"بلجيكا":5,"هولندا":6,"البرتغال":7,
       "إسبانيا":8,"إيطاليا":9,"كرواتيا":10,"ألمانيا":11,"المكسيك":12,"المغرب":13,"الولايات المتحدة":14,
@@ -837,32 +844,31 @@ function renderGroups(){
       "صربيا":29,"تونس":30,"الإكوادور":31,"السعودية":32,"مصر":33,"مالي":34,"كندا":35,
       "بنما":36,"قطر":37,"كوت ديفوار":38,"نيوزيلندا":39,"أستراليا":40,"الإمارات":41,
       "العراق":42,"الصين":43,"جنوب أفريقيا":50,"التشيك":55,"هايتي":80,"الرأس الأخضر":70,
-      "أوزبكستان":60,"الأردن":75,"الكونغو الديمقراطية":85,"غانا":65,"بنما":35,
-      "الباراغواي":60,"كوراساو":90,"البوسنة والهرسك":50,"تركيا":45,
-      "الرأس الأخضر":70,"هايتي":80,"بنما":35,"كوراساو":90
+      "أوزبكستان":60,"الأردن":75,"الكونغو الديمقراطية":85,"غانا":65,"الباراغواي":60,
+      "كوراساو":90,"البوسنة والهرسك":50,"تركيا":45
     };
     var sorted=Object.values(stats).sort(function(a,b){
+      // 1) النقاط (الأعلى أولاً)
       if(b.pts!==a.pts)return b.pts-a.pts;
+      // 2) فارق الأهداف (الأعلى أولاً)
       if(b.gd!==a.gd)return b.gd-a.gd;
+      // 3) الأهداف المسجلة (الأعلى أولاً)
       if(b.gf!==a.gf)return b.gf-a.gf;
-      // tie-breaker: تصنيف FIFA (الأصغر = أقوى = يبيّن أول)
+      // 4) FIFA ranking (الأصغر = أقوى = يبيّن أول)
       var ra=FIFA_RANK_LOOKUP[a.t]||999;
       var rb=FIFA_RANK_LOOKUP[b.t]||999;
-      if(ra!==rb)return ra-rb;
-      // tie-breaker نهائي: ترتيب القرعة الأصلي
-      return originalOrder[a.t]-originalOrder[b.t];
+      return ra-rb;
     });
 
     var rows=sorted.map(function(s,i){
       var pos=i+1;
       var pcls=pos<=2?"q":(pos===3?"m3":"");
-      var pstat=hasRealResults?
-        '<span style="font-size:10px;color:var(--dim);margin-right:auto"><b style="color:var(--gold2)">'+s.pts+'</b> نقط · فارق '+(s.gd>0?"+":"")+s.gd+'</span>':
-        '<span style="font-size:10px;color:var(--dim);margin-right:auto">تقديري · لم تبدأ</span>';
+      var gdSign=s.gd>0?"+":(s.gd<0?"−":"");
+      var pstat='<span style="font-size:10px;color:var(--dim);margin-right:auto;display:flex;gap:6px;align-items:center"><b style="color:var(--gold2);font-size:11px">'+s.pts+'</b><span style="opacity:.6">نقط</span><span style="opacity:.4">|</span><span style="color:'+(s.gd>0?"#7ee2ab":(s.gd<0?"#ff9aa3":"var(--mut)"))+'">'+gdSign+Math.abs(s.gd)+'</span></span>';
       return'<div class="trow" data-team="'+s.t+'"><span class="ltr" style="width:22px;height:22px;border-radius:7px;font-size:11px;background:'+(pcls==="q"?"rgba(46,204,113,.22);color:#7ee2ab":(pcls==="m3"?"rgba(240,194,75,.2);color:var(--gold2)":"rgba(255,255,255,.08);color:var(--mut)"))+';display:grid;place-items:center;font-weight:800;font-family:Changa">'+pos+'</span><span class="fl">'+flagImg(s.t)+'</span><span class="tn">'+s.t+'</span>'+pstat+'<span class="go">‹</span></div>';
     }).join("");
     return'<div class="grp"><span class="big">'+g+'</span><h3><span class="ltr">'+g+'</span>المجموعة '+g+'</h3>'+rows
-      +'<button class="stbtn" data-st="'+g+'">📊 الترتيب التفصيلي من ESPN</button>'
+      +'<button class="stbtn" data-st="'+g+'">📊 الترتيب الفعلي من ESPN</button>'
       +'<div id="st-'+g+'"></div>'
       +'<button class="gbtn" data-gomatches-group="'+g+'">📅 عرض مباريات المجموعة '+g+'</button></div>';
   }).join("");
