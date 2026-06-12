@@ -819,12 +819,15 @@ function renderGroups(){
       });
     }
 
-    // الترتيب: نقاط أولاً، ثم فارق أهداف، ثم أهداف مسجلة، ثم اسم
+    // الترتيب: نقاط أولاً، ثم فارق أهداف، ثم أهداف مسجلة، ثم ترتيب القرعة الأصلي
+    var originalOrder={};
+    GROUPS[g].forEach(function(t,i){originalOrder[t]=i;});
     var sorted=Object.values(stats).sort(function(a,b){
       if(b.pts!==a.pts)return b.pts-a.pts;
       if(b.gd!==a.gd)return b.gd-a.gd;
       if(b.gf!==a.gf)return b.gf-a.gf;
-      return a.t.localeCompare(b.t,"ar");
+      // tie-breaker: ترتيب القرعة الأصلي
+      return originalOrder[a.t]-originalOrder[b.t];
     });
 
     var rows=sorted.map(function(s,i){
