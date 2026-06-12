@@ -1070,7 +1070,18 @@ function renderStanding(g){
     var cls=i<2?"q":(i===2?"m3":"");
     var agd=parseInt(String(r.gd).replace("+",""),10)||0;
     var gdColor=agd>0?"#7ee2ab":(agd<0?"#ff9aa3":"var(--mut)");
-    html+='<tr class="'+cls+'"><td><span class="pos">'+(i+1)+'</span></td><td class="t">'+flagImg(r.t)+' '+r.t+'</td><td>'+r.p+'</td><td style="color:'+gdColor+';font-weight:700">'+r.gd+'</td><td class="pts">'+r.pts+'</td></tr>';
+    // نحاول نحصل على الاسم العربي من GROUPS، وإلا نستخدم r.t
+    var arName=r.t;
+    for(var gk in GROUPS){
+      if(GROUPS[gk].indexOf(r.t)!==-1){arName=r.t;break;}
+    }
+    // إذا الاسم إنجليزي (مو موجود في GROUPS)، نبحث في ALIAS المعكوس
+    if(arName===r.t && ALIAS){
+      for(var ak in ALIAS){
+        if(ALIAS[ak].some(function(a){return normEn(a)===normEn(r.t);})){arName=ak;break;}
+      }
+    }
+    html+='<tr class="'+cls+'"><td><span class="pos">'+(i+1)+'</span></td><td class="t">'+flagImg(arName)+' '+arName+'</td><td>'+r.p+'</td><td style="color:'+gdColor+';font-weight:700">'+r.gd+'</td><td class="pts">'+r.pts+'</td></tr>';
   });
   html+='</table><div class="stmeta">الأول والثاني يتأهلان مباشرة + أفضل 8 من أصحاب المركز الثالث · <button class="lu-alt" data-st="'+g+'">↻ تحديث</button></div>';
   box.innerHTML=html;
