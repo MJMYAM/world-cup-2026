@@ -819,9 +819,8 @@ function renderGroups(){
     var rows=sorted.map(function(s,i){
       var pos=i+1;
       var pcls=pos<=2?"q":(pos===3?"m3":"");
-      var pstat=hasRealResults?
-        '<span style="font-size:10px;color:var(--dim);margin-right:auto;display:flex;gap:6px;align-items:center"><b style="color:var(--gold2);font-size:11px">'+s.pts+'</b><span style="opacity:.6">نقط</span><span style="opacity:.4">|</span><span style="color:'+(s.gd>0?"#7ee2ab":(s.gd<0?"#ff9aa3":"var(--mut)"))+'">'+(s.gd>0?"+":(s.gd<0?"−":""))+(s.gd)+'</span></span>':
-        '<span style="font-size:9.5px;color:var(--dim);margin-right:auto">— لم تبدأ —</span>';
+      // عرض الأرقام الحقيقية (صفر) بناءً على النتائج
+      var pstat='<span style="font-size:10px;color:var(--dim);margin-right:auto;display:flex;gap:6px;align-items:center"><b style="color:var(--gold2);font-size:11px">'+(s.pts||0)+'</b><span style="opacity:.6">نقط</span><span style="opacity:.4">|</span><span style="color:'+(s.gd>0?"#7ee2ab":(s.gd<0?"#ff9aa3":"var(--mut)"))+'">'+(s.gd>0?"+":(s.gd<0?"−":"±"))+Math.abs(s.gd||0)+'</span></span>';
       return'<div class="trow" data-team="'+s.t+'"><span class="ltr" style="width:22px;height:22px;border-radius:7px;font-size:11px;background:'+(pcls==="q"?"rgba(46,204,113,.22);color:#7ee2ab":(pcls==="m3"?"rgba(240,194,75,.2);color:var(--gold2)":"rgba(255,255,255,.08);color:var(--mut)"))+';display:grid;place-items:center;font-weight:800;font-family:Changa">'+pos+'</span><span class="fl">'+flagImg(s.t)+'</span><span class="tn">'+s.t+'</span>'+pstat+'<span class="go">‹</span></div>';
     }).join("");
     return'<div class="grp"><span class="big">'+g+'</span><h3><span class="ltr">'+g+'</span>المجموعة '+g+'</h3>'+rows
