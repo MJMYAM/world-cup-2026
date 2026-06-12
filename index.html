@@ -870,8 +870,6 @@ function renderGroups(){
       return'<div class="trow" data-team="'+s.t+'"><span class="ltr" style="width:22px;height:22px;border-radius:7px;font-size:11px;background:'+(pcls==="q"?"rgba(46,204,113,.22);color:#7ee2ab":(pcls==="m3"?"rgba(240,194,75,.2);color:var(--gold2)":"rgba(255,255,255,.08);color:var(--mut)"))+';display:grid;place-items:center;font-weight:800;font-family:Changa">'+pos+'</span><span class="fl">'+flagImg(s.t)+'</span><span class="tn">'+s.t+'</span>'+pstat+'<span class="go">‹</span></div>';
     }).join("");
     return'<div class="grp"><span class="big">'+g+'</span><h3><span class="ltr">'+g+'</span>المجموعة '+g+'</h3>'+rows
-      +'<button class="stbtn" data-st="'+g+'">📊 الترتيب الفعلي من ESPN</button>'
-      +'<div id="st-'+g+'"></div>'
       +'<button class="gbtn" data-gomatches-group="'+g+'">📅 عرض مباريات المجموعة '+g+'</button></div>';
   }).join("");
 }
@@ -1019,7 +1017,8 @@ async function loadStandingsESPN(){
     ST_CACHE[g]={rows:rows};got++;
   });
   if(!got)throw new Error("empty");
-  Object.keys(GROUPS).forEach(function(g){if(ST_CACHE[g])renderStanding(g);});
+  // لا نعرض جدول ESPN تلقائياً — نخزّن البيانات في ST_CACHE فقط
+  // لو المستخدم طلب عرضها لاحقاً نقدر نستخدمها
   return true;
 }
 
