@@ -1055,10 +1055,22 @@ async function fetchScore(n,btn){
 function renderStanding(g){
   var box=document.getElementById("st-"+g),c=ST_CACHE[g];
   if(!box||!c)return;
+
+  // ترتيب البيانات: نقاط تنازلياً، فارق أهداف، أهداف مسجلة
+  var sorted=c.rows.slice().sort(function(a,b){
+    if(b.pts!==a.pts)return b.pts-a.pts;
+    var agd=parseInt(String(a.gd).replace("+",""),10)||0;
+    var bgd=parseInt(String(b.gd).replace("+",""),10)||0;
+    if(bgd!==agd)return bgd-agd;
+    return 0;
+  });
+
   var html='<table class="sttbl"><tr><th>#</th><th class="t">المنتخب</th><th>لعب</th><th>+/-</th><th>نقاط</th></tr>';
-  c.rows.slice(0,4).forEach(function(r,i){
+  sorted.slice(0,4).forEach(function(r,i){
     var cls=i<2?"q":(i===2?"m3":"");
-    html+='<tr class="'+cls+'"><td><span class="pos">'+(i+1)+'</span></td><td class="t">'+flagImg(r.t)+' '+r.t+'</td><td>'+r.p+'</td><td>'+r.gd+'</td><td class="pts">'+r.pts+'</td></tr>';
+    var agd=parseInt(String(r.gd).replace("+",""),10)||0;
+    var gdColor=agd>0?"#7ee2ab":(agd<0?"#ff9aa3":"var(--mut)");
+    html+='<tr class="'+cls+'"><td><span class="pos">'+(i+1)+'</span></td><td class="t">'+flagImg(r.t)+' '+r.t+'</td><td>'+r.p+'</td><td style="color:'+gdColor+';font-weight:700">'+r.gd+'</td><td class="pts">'+r.pts+'</td></tr>';
   });
   html+='</table><div class="stmeta">الأول والثاني يتأهلان مباشرة + أفضل 8 من أصحاب المركز الثالث · <button class="lu-alt" data-st="'+g+'">↻ تحديث</button></div>';
   box.innerHTML=html;
