@@ -401,14 +401,16 @@ nav#bn button.on::before{content:""; position:absolute; top:-8px; right:50%; tra
 .scbtn:disabled{opacity:.6; cursor:wait;}
 .stbtn{width:100%; margin-top:8px; background:linear-gradient(135deg,rgba(61,139,255,.18),rgba(61,139,255,.05)); border:1px solid rgba(61,139,255,.45); color:#9cc3ff; font-family:inherit; font-size:11.5px; font-weight:700; border-radius:11px; padding:8px; cursor:pointer;}
 .stbtn:disabled{opacity:.6; cursor:wait;}
-.sttbl{width:100%; border-collapse:collapse; margin-top:9px; font-size:11.5px;}
-.sttbl th{color:var(--dim); font-weight:600; font-size:9.5px; padding:3px 4px; text-align:center; border-bottom:1px solid var(--line);}
+.sttbl{width:100%; border-collapse:collapse; margin-top:9px; font-size:14px;}
+.sttbl th{color:var(--dim); font-weight:700; font-size:12px; padding:6px 6px; text-align:center; border-bottom:1px solid var(--line);}
 .sttbl th.t{text-align:right;}
-.sttbl td{padding:6px 4px; text-align:center; border-bottom:1px dashed rgba(255,255,255,.07); color:#cdd6f4; font-variant-numeric:tabular-nums;}
-.sttbl td.t{text-align:right; font-weight:600;}
+.sttbl td{padding:10px 6px; text-align:center; border-bottom:1px dashed rgba(255,255,255,.07); color:#cdd6f4; font-variant-numeric:tabular-nums; font-weight:600; font-size:14px;}
+.sttbl td.t{text-align:right; font-weight:700; font-size:14.5px;}
 .sttbl tr:last-child td{border-bottom:none;}
-.sttbl .pos{display:inline-grid; place-items:center; width:18px; height:18px; border-radius:6px; font-size:9.5px; font-weight:700; background:rgba(255,255,255,.08); color:var(--mut);}
+.sttbl .pos{display:inline-grid; place-items:center; width:24px; height:24px; border-radius:7px; font-size:13px; font-weight:800; background:rgba(255,255,255,.08); color:var(--mut);}
 .sttbl tr.q .pos{background:rgba(46,204,113,.22); color:#7ee2ab;}
+.sttbl tr.m3 .pos{background:rgba(240,194,75,.18); color:var(--gold2);}
+.sttbl td.pts{font-weight:800; color:#fff; font-size:18px; font-family:"Changa",sans-serif;}
 .sttbl tr.m3 .pos{background:rgba(240,194,75,.18); color:var(--gold2);}
 .sttbl td.pts{font-weight:800; color:#fff;}
 .stmeta{font-size:9.5px; color:var(--dim); text-align:center; margin-top:6px; line-height:1.9;}
@@ -1081,7 +1083,7 @@ function renderStanding(g){
         if(ALIAS[ak].some(function(a){return normEn(a)===normEn(r.t);})){arName=ak;break;}
       }
     }
-    html+='<tr class="'+cls+'"><td><span class="pos">'+(i+1)+'</span></td><td class="t">'+flagImg(arName)+' '+arName+'</td><td>'+r.p+'</td><td style="color:'+gdColor+';font-weight:700">'+r.gd+'</td><td class="pts">'+r.pts+'</td></tr>';
+    html+='<tr class="'+cls+'"><td><span class="pos">'+(i+1)+'</span></td><td class="t">'+flagImg(arName)+' '+arName+'</td><td>'+r.p+'</td><td style="color:'+gdColor+';font-weight:800;font-size:16px;font-family:Changa,sans-serif">'+r.gd+'</td><td class="pts">'+r.pts+'</td></tr>';
   });
   html+='</table><div class="stmeta">الأول والثاني يتأهلان مباشرة + أفضل 8 من أصحاب المركز الثالث · <button class="lu-alt" data-st="'+g+'">↻ تحديث</button></div>';
   box.innerHTML=html;
