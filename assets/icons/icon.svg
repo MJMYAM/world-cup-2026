@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#060a1c"/>
+      <stop offset="100%" stop-color="#0a1028"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffe9b0"/>
+      <stop offset="55%" stop-color="#f0c24b"/>
+      <stop offset="100%" stop-color="#d9a02c"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="42" fill="url(#bg)"/>
+  <circle cx="96" cy="96" r="58" fill="none" stroke="url(#gold)" stroke-width="6"/>
+  <path d="M50 96 Q96 50 142 96 Q96 142 50 96 Z" fill="url(#gold)" opacity="0.9"/>
+  <path d="M76 76 Q96 64 116 76" stroke="#060a1c" stroke-width="3" fill="none"/>
+  <path d="M76 116 Q96 128 116 116" stroke="#060a1c" stroke-width="3" fill="none"/>
+  <rect x="62" y="98" width="68" height="6" fill="#060a1c"/>
+  <text x="96" y="172" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="20" fill="url(#gold)">2026</text>
+</svg>

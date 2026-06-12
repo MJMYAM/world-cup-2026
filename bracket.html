@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>🏆 شجرة كأس العالم 2026 — خروج المغلوب</title>
+<meta name="theme-color" content="#060a1c">
+<style>
+:root{
+  --bg:#060a1c; --bg2:#0a1028;
+  --card:rgba(255,255,255,.05); --card2:rgba(255,255,255,.08);
+  --line:rgba(255,255,255,.10);
+  --txt:#eef2ff; --mut:#94a0c6; --dim:#5e6a93;
+  --gold:#f0c24b; --gold2:#ffe09a;
+  --red:#e84855; --blue:#3d8bff; --green:#2ecc71;
+  --nav-h:60px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--txt);
+  font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
+  font-size:14px;line-height:1.6;min-height:100vh;overflow-x:auto;
+}
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-orbs span{position:absolute;width:46vw;height:46vw;min-width:300px;border-radius:50%;filter:blur(95px);opacity:.16;animation:dr 26s ease-in-out infinite alternate}
+.bg-orbs span:nth-child(1){background:var(--red);top:-12%;right:-10%}
+.bg-orbs span:nth-child(2){background:var(--blue);bottom:-14%;left:-16%;animation-delay:-10s}
+@keyframes dr{from{transform:translate(0,0) scale(1)}to{transform:translate(6vw,-5vh) scale(1.12)}}
+
+header{
+  position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));
+  background:rgba(6,10,28,.78);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line)
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .cup{font-size:24px;filter:drop-shadow(0 0 12px rgba(240,194,75,.55))}
+.brand h1{margin:0;font-family:"Changa",sans-serif;font-weight:800;font-size:18px;line-height:1.15;white-space:nowrap;background:linear-gradient(110deg,#ffe9b0,var(--gold) 55%,#d9a02c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand small{display:block;font-weight:500;font-size:10.5px;color:var(--mut);letter-spacing:.4px}
+.back{color:var(--gold);text-decoration:none;font-size:12px;font-weight:600;background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:99px;flex-shrink:0}
+
+main{position:relative;z-index:1;max-width:100vw;margin:0 auto;padding:18px 16px 60px}
+
+.intro{text-align:center;margin:6px 0 18px}
+.intro h2{margin:0 0 6px;font-family:"Changa",sans-serif;font-weight:800;font-size:20px;background:linear-gradient(110deg,#ffe9b0,var(--gold) 55%,#d9a02c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.intro p{margin:0;color:var(--mut);font-size:12.5px}
+
+.scroller{
+  display:flex;gap:18px;align-items:stretch;
+  overflow-x:auto;padding:14px 4px 18px;
+  scroll-snap-type:x proximity;
+}
+.scroller::-webkit-scrollbar{height:6px}
+.scroller::-webkit-scrollbar-track{background:var(--card);border-radius:3px}
+.scroller::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px}
+
+.round-col{
+  display:flex;flex-direction:column;justify-content:space-around;
+  gap:10px;min-width:200px;scroll-snap-align:start
+}
+.round-title{
+  font-family:"Changa",sans-serif;font-weight:700;font-size:13px;
+  text-align:center;color:var(--mut);margin-bottom:6px;letter-spacing:1.5px
+}
+.round-title small{display:block;color:var(--dim);font-size:9.5px;margin-top:2px;font-weight:500;letter-spacing:0}
+
+.bm{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:11px;padding:7px 9px;position:relative;
+  transition:all .15s;cursor:pointer
+}
+.bm:hover{border-color:rgba(240,194,75,.4);transform:translateX(-2px)}
+.bm.live{border-color:rgba(255,71,87,.55);box-shadow:0 0 18px -6px rgba(255,71,87,.45)}
+.bm.is-final{
+  border-color:rgba(240,194,75,.65);
+  background:radial-gradient(140% 160% at 50% -30%,rgba(240,194,75,.16),transparent 60%),var(--card);
+  box-shadow:0 0 28px -8px rgba(240,194,75,.4)
+}
+.bm.is-third{border-color:rgba(154,166,200,.45)}
+
+.bt{
+  display:flex;align-items:center;gap:6px;padding:4px 0;
+  font-size:12px;border-bottom:1px dashed rgba(255,255,255,.05)
+}
+.bt:last-of-type{border-bottom:none}
+.bt .fl{font-size:15px;flex-shrink:0}
+.bt .tn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bt .sc{font-family:"Changa",sans-serif;font-weight:800;font-size:13px;min-width:18px;text-align:center;color:var(--mut)}
+.bt.winner .sc{color:var(--gold2)}
+.bt.winner{color:var(--gold2);font-weight:700}
+.bt.winner .tn::before{content:"✓ ";color:var(--green);font-size:10px}
+.bt.loser{opacity:.45}
+.bt .ph{color:var(--dim);font-style:italic}
+
+.bm-meta{
+  display:flex;justify-content:space-between;font-size:9.5px;
+  color:var(--dim);margin-top:4px;padding-top:4px;
+  border-top:1px dashed var(--line);font-variant-numeric:tabular-nums
+}
+.bm-meta .live{color:#ff6b76;font-weight:700}
+
+.section-title{
+  font-family:"Changa",sans-serif;font-weight:700;font-size:16px;
+  text-align:center;margin:30px 0 12px;color:#9aa6c8;
+  display:flex;align-items:center;gap:10px;justify-content:center
+}
+.section-title::before,.section-title::after{content:"";width:40px;height:1px;background:var(--line)}
+
+.third-block{max-width:280px;margin:0 auto}
+
+footer{
+  margin-top:40px;text-align:center;font-size:11px;
+  color:var(--dim);line-height:2
+}
+footer .credit{
+  display:inline-block;margin-top:5px;font-family:"Changa",sans-serif;
+  font-size:13px;font-weight:700;
+  background:linear-gradient(110deg,#ffe9b0,var(--gold) 55%,#d9a02c);
+  -webkit-background-clip:text;background-clip:text;color:transparent
+}
+
+#toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:rgba(8,12,30,.95);border:1px solid var(--gold);
+  color:var(--txt);padding:8px 16px;border-radius:99px;
+  font-size:12px;font-weight:600;z-index:100;
+  display:none;backdrop-filter:blur(8px)
+}
+#toast.show{display:block;animation:rise .3s ease both}
+
+.legend{
+  display:flex;justify-content:center;gap:14px;flex-wrap:wrap;
+  margin:14px 0 6px;font-size:11px;color:var(--mut)
+}
+.legend-item{display:flex;align-items:center;gap:5px}
+.legend-item .dot{width:8px;height:8px;border-radius:50%}
+
+@keyframes rise{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+@media (max-width:480px){
+  .round-col{min-width:170px}
+  .bt{font-size:11px}
+}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><span></span><span></span></div>
+
+<header>
+  <div class="brand">
+    <span class="cup">🏆</span>
+    <h1>شجرة كأس العالم 2026<small>خروج المغلوب · 32 منتخبًا</small></h1>
+  </div>
+  <a class="back" href="javascript:history.back()">← رجوع</a>
+</header>
+
+<main>
+  <div class="intro">
+    <h2>مشوار التتويج بالكأس</h2>
+    <p>15 مباراة إقصائية من دور الـ32 حتى النهائي الكبير في 19 يوليو 🇺🇸🇨🇦🇲🇽</p>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="dot" style="background:#f4b23e"></span>دور الـ32</div>
+    <div class="legend-item"><span class="dot" style="background:#38c8d9"></span>دور الـ16</div>
+    <div class="legend-item"><span class="dot" style="background:#b07cf7"></span>الربع</div>
+    <div class="legend-item"><span class="dot" style="background:#f4679b"></span>النصف</div>
+    <div class="legend-item"><span class="dot" style="background:#f0c24b"></span>النهائي</div>
+    <div class="legend-item"><span class="dot" style="background:#9aa6c8"></span>المركز الثالث</div>
+  </div>
+
+  <div class="scroller" id="scroller"></div>
+
+  <h3 class="section-title">مباراة المركز الثالث</h3>
+  <div class="third-block" id="thirdBlock"></div>
+
+  <footer>
+    جميع الأوقات بتوقيت الكويت 🇰🇼 · يتم تحديث النتائج مباشرة من ESPN<br>
+    <span class="credit">إعداد وتنفيذ: مبارك المعتوق ⚽</span>
+  </footer>
+</main>
+
+<div id="toast"></div>
+
+<script>
+/* ========== DATA ========== */
+const STADIUMS = {
+  azteca:{n:"أزتيكا",c:"مكسيكو سيتي"},metlife:{n:"ميتلايف",c:"نيويورك"},att:{n:"إيه تي آند تي",c:"دالاس"},
+  arrowhead:{n:"أروهيد",c:"كانساس"},nrg:{n:"إن آر جي",c:"هيوستن"},mercedes:{n:"مرسيدس بنز",c:"أتلانتا"},
+  sofi:{n:"صوفي",c:"لوس أنجلوس"},lincoln:{n:"لينكولن فيلد",c:"فيلادلفيا"},lumen:{n:"لومن فيلد",c:"سياتل"},
+  levis:{n:"ليفاي",c:"سان فرانسيسكو"},gillette:{n:"جيليت",c:"بوسطن"},hardrock:{n:"هارد روك",c:"ميامي"},
+  bcplace:{n:"بي سي بليس",c:"فانكوفر"},bbva:{n:"بي بي في إيه",c:"مونتيري"},akron:{n:"آكرون",c:"غوادالاخارا"},
+  bmo:{n:"بي إم أو",c:"تورونتو"}
+};
+
+const TEAMS = {
+  "المكسيك":"🇲🇽","جنوب أفريقيا":"🇿🇦","كوريا الجنوبية":"🇰🇷","التشيك":"🇨🇿","كندا":"🇨🇦","سويسرا":"🇨🇭",
+  "قطر":"🇶🇦","البوسنة والهرسك":"🇧🇦","البرازيل":"🇧🇷","المغرب":"🇲🇦","هايتي":"🇭🇹","اسكتلندا":"🏴",
+  "الولايات المتحدة":"🇺🇸","الباراغواي":"🇵🇾","أستراليا":"🇦🇺","تركيا":"🇹🇷","ألمانيا":"🇩🇪","كوراساو":"🇨🇼",
+  "كوت ديفوار":"🇨🇮","الإكوادور":"🇪🇨","هولندا":"🇳🇱","اليابان":"🇯🇵","تونس":"🇹🇳","السويد":"🇸🇪",
+  "بلجيكا":"🇧🇪","مصر":"🇪🇬","إيران":"🇮🇷","نيوزيلندا":"🇳🇿","إسبانيا":"🇪🇸","الرأس الأخضر":"🇨🇻",
+  "السعودية":"🇸🇦","الأوروغواي":"🇺🇾","فرنسا":"🇫🇷","السنغال":"🇸🇳","النرويج":"🇳🇴","العراق":"🇮🇶",
+  "الأرجنتين":"🇦🇷","الجزائر":"🇩🇿","النمسا":"🇦🇹","الأردن":"🇯🇴","البرتغال":"🇵🇹","أوزبكستان":"🇺🇿",
+  "كولومبيا":"🇨🇴","الكونغو الديمقراطية":"🇨🇩","إنجلترا":"🏴","كرواتيا":"🇭🇷","غانا":"🇬🇭","بنما":"🇵🇦"
+};
+
+const M = [
+  // R32
+  {n:73,r:"r32",h:"وصيف A",a:"وصيف B",t:"22:00",s:"sofi"},
+  {n:74,r:"r32",h:"متصدر E",a:"ثالث",t:"23:30",s:"gillette"},
+  {n:75,r:"r32",h:"متصدر F",a:"وصيف C",t:"04:00",s:"bbva"},
+  {n:76,r:"r32",h:"متصدر C",a:"وصيف F",t:"20:00",s:"nrg"},
+  {n:77,r:"r32",h:"متصدر I",a:"ثالث",t:"00:00",s:"metlife"},
+  {n:78,r:"r32",h:"وصيف E",a:"وصيف I",t:"20:00",s:"att"},
+  {n:79,r:"r32",h:"متصدر A",a:"ثالث",t:"04:00",s:"azteca"},
+  {n:80,r:"r32",h:"متصدر L",a:"ثالث",t:"19:00",s:"mercedes"},
+  {n:81,r:"r32",h:"متصدر D",a:"ثالث",t:"03:00",s:"levis"},
+  {n:82,r:"r32",h:"متصدر G",a:"ثالث",t:"23:00",s:"lumen"},
+  {n:83,r:"r32",h:"وصيف K",a:"وصيف L",t:"02:00",s:"bmo"},
+  {n:84,r:"r32",h:"متصدر H",a:"وصيف J",t:"22:00",s:"sofi"},
+  {n:85,r:"r32",h:"متصدر B",a:"ثالث",t:"06:00",s:"bcplace"},
+  {n:86,r:"r32",h:"متصدر J",a:"وصيف H",t:"01:00",s:"hardrock"},
+  {n:87,r:"r32",h:"متصدر K",a:"ثالث",t:"04:30",s:"arrowhead"},
+  {n:88,r:"r32",h:"وصيف D",a:"وصيف G",t:"21:00",s:"att"},
+  // R16
+  {n:89,r:"r16",h:"فائز 74",a:"فائز 77",d:"2026-07-05",t:"00:00",s:"lincoln"},
+  {n:90,r:"r16",h:"فائز 73",a:"فائز 75",d:"2026-07-04",t:"20:00",s:"nrg"},
+  {n:91,r:"r16",h:"فائز 76",a:"فائز 78",d:"2026-07-05",t:"23:00",s:"metlife"},
+  {n:92,r:"r16",h:"فائز 79",a:"فائز 80",d:"2026-07-06",t:"03:00",s:"azteca"},
+  {n:93,r:"r16",h:"فائز 83",a:"فائز 84",d:"2026-07-06",t:"22:00",s:"att"},
+  {n:94,r:"r16",h:"فائز 81",a:"فائز 82",d:"2026-07-07",t:"03:00",s:"lumen"},
+  {n:95,r:"r16",h:"فائز 86",a:"فائز 88",d:"2026-07-07",t:"19:00",s:"mercedes"},
+  {n:96,r:"r16",h:"فائز 85",a:"فائز 87",d:"2026-07-07",t:"23:00",s:"bcplace"},
+  // QF
+  {n:97,r:"qf",h:"فائز 89",a:"فائز 90",d:"2026-07-09",t:"23:00",s:"gillette"},
+  {n:98,r:"qf",h:"فائز 93",a:"فائز 94",d:"2026-07-10",t:"22:00",s:"sofi"},
+  {n:99,r:"qf",h:"فائز 91",a:"فائز 92",d:"2026-07-12",t:"00:00",s:"hardrock"},
+  {n:100,r:"qf",h:"فائز 95",a:"فائز 96",d:"2026-07-12",t:"04:00",s:"arrowhead"},
+  // SF
+  {n:101,r:"sf",h:"فائز 97",a:"فائز 98",d:"2026-07-14",t:"22:00",s:"att"},
+  {n:102,r:"sf",h:"فائز 99",a:"فائز 100",d:"2026-07-15",t:"22:00",s:"mercedes"},
+  // Third + Final
+  {n:103,r:"third",h:"خاسر 101",a:"خاسر 102",d:"2026-07-19",t:"00:00",s:"hardrock"},
+  {n:104,r:"final",h:"فائز 101",a:"فائز 102",d:"2026-07-19",t:"22:00",s:"metlife"}
+];
+
+const ROUND_INFO = {
+  r32:   {l:"دور الـ32",  d:"28 يونيو – 3 يوليو", c:"#f4b23e"},
+  r16:   {l:"دور الـ16",  d:"4 – 7 يوليو",        c:"#38c8d9"},
+  qf:    {l:"الربع",      d:"9 – 12 يوليو",       c:"#b07cf7"},
+  sf:    {l:"النصف",      d:"14 – 15 يوليو",      c:"#f4679b"},
+  final: {l:"النهائي",    d:"19 يوليو",            c:"#f0c24b"}
+};
+
+const ROUND_ORDER = ["r32","r16","qf","sf","final"];
+
+/* ========== STATE ========== */
+const scores = {};   // {matchN: {sh, sa, status, minute}}
+const liveMatches = new Set();
+let pollTimer = null;
+
+/* ========== HELPERS ========== */
+const WD=["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+const MO=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+function fmtD(d){
+  if(!d) return "";
+  const x=new Date(d+"T12:00:00");
+  return `${WD[x.getDay()]} ${x.getDate()} ${MO[x.getMonth()]}`;
+}
+function fmtT(t){
+  const p=t.split(":"),h=+p[0],mn=p[1];
+  const ap=h===0?"منتصف الليل":(h===12?"ظهرًا":(h<12?"صباحًا":"مساءً"));
+  const hh=h%12||12;
+  return {t:`${hh}:${mn}`,ap};
+}
+function flag(name){return TEAMS[name]||"";}
+
+/* ========== ESPN ========== */
+const ALIAS={
+  "المكسيك":["mexico"],"جنوب أفريقيا":["south africa"],"كوريا الجنوبية":["south korea","korea republic"],
+  "التشيك":["czech republic","czechia"],"كندا":["canada"],"سويسرا":["switzerland"],"قطر":["qatar"],
+  "البوسنة والهرسك":["bosnia and herzegovina","bosnia"],"البرازيل":["brazil"],"المغرب":["morocco"],
+  "هايتي":["haiti"],"اسكتلندا":["scotland"],"الولايات المتحدة":["united states","usa"],
+  "الباراغواي":["paraguay"],"أستراليا":["australia"],"تركيا":["turkey","turkiye","türkiye"],
+  "ألمانيا":["germany"],"كوراساو":["curacao"],"كوت ديفوار":["ivory coast","cote d'ivoire","cote d ivoire"],
+  "الإكوادور":["ecuador"],"هولندا":["netherlands","holland"],"اليابان":["japan"],"تونس":["tunisia"],
+  "السويد":["sweden"],"بلجيكا":["belgium"],"مصر":["egypt"],"إيران":["iran"],"نيوزيلندا":["new zealand"],
+  "إسبانيا":["spain"],"الرأس الأخضر":["cape verde","cabo verde"],"السعودية":["saudi arabia"],
+  "الأوروغواي":["uruguay"],"فرنسا":["france"],"السنغال":["senegal"],"النرويج":["norway"],
+  "العراق":["iraq"],"الأرجنتين":["argentina"],"الجزائر":["algeria"],"النمسا":["austria"],
+  "الأردن":["jordan"],"البرتغال":["portugal"],"أوزبكستان":["uzbekistan"],"كولومبيا":["colombia"],
+  "الكونغو الديمقراطية":["dr congo","congo dr"],"إنجلترا":["england"],"كرواتيا":["croatia"],
+  "غانا":["ghana"],"بنما":["panama"]
+};
+function normEn(s){
+  return (s||"").toLowerCase().normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"").replace(/[^a-z ]/g," ").replace(/\s+/g," ").trim();
+}
+function teamIs(ar,en){
+  const a=ALIAS[ar];if(!a)return false;
+  const e=normEn(en);
+  return a.some(x=>e.includes(x)||x.includes(e));
+}
+function findByNames(n1,n2){
+  for(const m of M){
+    if(!TEAMS[m.h]||!TEAMS[m.a])continue;
+    if((teamIs(m.h,n1)&&teamIs(m.a,n2))||(teamIs(m.h,n2)&&teamIs(m.a,n1)))return m;
+  }
+  return null;
+}
+
+async function pollESPN(){
+  if(document.hidden)return;
+  const now=Date.now();
+  const from=ymd(new Date(now-36*3600000));
+  const to=ymd(new Date(now+24*3600000));
+  try{
+    const res=await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=${from}-${to}`);
+    if(!res.ok)return;
+    const data=await res.json();
+    (data.events||[]).forEach(ev=>{
+      try{
+        const comp=(ev.competitions||[])[0];if(!comp)return;
+        const cs=comp.competitors||[];if(cs.length<2)return;
+        const mm=findByNames(cs[0].team.displayName,cs[1].team.displayName);
+        if(!mm)return;
+        const st=ev.status||{},ty=st.type||{};
+        if(ty.state==="in")liveMatches.add(mm.n);
+        else liveMatches.delete(mm.n);
+        if(ty.state==="post"||ty.state==="in"){
+          // map sides
+          let hi=-1,ai=-1;
+          for(let i=0;i<cs.length;i++){
+            const nm=cs[i].team.displayName;
+            if(hi===-1&&teamIs(mm.h,nm))hi=i;
+            else if(ai===-1&&teamIs(mm.a,nm))ai=i;
+          }
+          if(hi===-1||ai===-1){
+            for(let j=0;j<cs.length;j++){
+              if(cs[j].homeAway==="home"&&hi===-1)hi=j;
+              if(cs[j].homeAway==="away"&&ai===-1)ai=j;
+            }
+          }
+          const sh=parseInt(cs[hi].score||"0",10);
+          const sa=parseInt(cs[ai].score||"0",10);
+          scores[mm.n]={sh,sa,status:ty.state==="post"?"finished":"live",minute:String(st.displayClock||"")};
+        }
+      }catch(e){}
+    });
+    renderAll();
+  }catch(e){console.warn("ESPN failed",e);}
+}
+function ymd(dt){return dt.toISOString().slice(0,10).replace(/-/g,"");}
+
+/* ========== RENDER ========== */
+function teamRow(m,side){
+  const sc=scores[m.n];
+  const realTeam=TEAMS[m[side]];
+  const phText=!realTeam;
+  let scText="";
+  let winner=false,loser=false;
+  if(sc){
+    if(side==="h"){scText=sc.sh;if(sc.status==="finished"){winner=sc.sh>sc.sa;loser=sc.sh<sc.sa;}}
+    if(side==="a"){scText=sc.sa;if(sc.status==="finished"){winner=sc.sa>sc.sh;loser=sc.sa<sc.sh;}}
+  }
+  let cls="bt";
+  if(winner)cls+=" winner";
+  if(loser)cls+=" loser";
+  if(phText&&!scText)cls+=" ph";
+  return `<div class="${cls}">
+    <span class="fl">${phText?"🔒":flag(m[side])}</span>
+    <span class="tn">${m[side]}</span>
+    <span class="sc">${scText||""}</span>
+  </div>`;
+}
+
+function matchCard(m){
+  const sc=scores[m.n];
+  const s=STADIUMS[m.s];
+  const isLive=liveMatches.has(m.n)||(sc&&sc.status==="live");
+  const isFinal=m.r==="final";
+  const isThird=m.r==="third";
+  let cls="bm";
+  if(isLive)cls+=" live";
+  if(isFinal)cls+=" is-final";
+  if(isThird)cls+=" is-third";
+  const tm=fmtT(m.t);
+  const dateStr=m.d?fmtD(m.d):"";
+  const liveText=isLive?`⏱ ${sc&&sc.minute?sc.minute:""}`:"";
+
+  return `<div class="${cls}" data-mn="${m.n}">
+    ${teamRow(m,"h")}
+    ${teamRow(m,"a")}
+    <div class="bm-meta">
+      <span>${s?(s.n+", "+s.c):""}</span>
+      <span class="${isLive?"live":""}">${isLive?liveText:(dateStr?(dateStr+" · "+tm.t):tm.t+" "+tm.ap)}</span>
+    </div>
+  </div>`;
+}
+
+function renderAll(){
+  const scroller=document.getElementById("scroller");
+  scroller.innerHTML=ROUND_ORDER.map(rk=>{
+    const arr=M.filter(m=>m.r===rk).sort((a,b)=>a.n-b.n);
+    const info=ROUND_INFO[rk];
+    return `<div class="round-col">
+      <div class="round-title" style="color:${info.c}">${info.l}<small>${info.d}</small></div>
+      ${arr.map(matchCard).join("")}
+    </div>`;
+  }).join("");
+
+  const third=M.find(m=>m.r==="third");
+  document.getElementById("thirdBlock").innerHTML=third?matchCard(third):"";
+}
+
+/* ========== TOAST ========== */
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.classList.add("show");
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>t.classList.remove("show"),2200);
+}
+
+/* ========== CLICK ========== */
+document.body.addEventListener("click",e=>{
+  const t=e.target.closest("[data-mn]");
+  if(t){
+    const n=t.dataset.mn;
+    const m=M.find(x=>x.n==n);
+    if(m){
+      const s=STADIUMS[m.s];
+      toast(`مباراة ${n} · ${m.h} ضد ${m.a} · ${s?s.n:""}`);
+    }
+  }
+});
+
+/* ========== INIT ========== */
+renderAll();
+pollESPN();
+pollTimer=setInterval(pollESPN,120000);
+</script>
+</body>
+</html>

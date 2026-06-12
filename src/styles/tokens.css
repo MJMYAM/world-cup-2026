@@ -1,0 +1,52 @@
+/* tokens.css — Design Tokens (الألوان والقياسات والمتغيرات) */
+:root {
+  /* Brand colors */
+  --bg: #060a1c;
+  --bg2: #0a1028;
+  --card: rgba(255, 255, 255, .05);
+  --card2: rgba(255, 255, 255, .08);
+  --line: rgba(255, 255, 255, .10);
+
+  /* Text */
+  --txt: #eef2ff;
+  --mut: #94a0c6;
+  --dim: #5e6a93;
+
+  /* Accents */
+  --gold: #f0c24b;
+  --gold2: #ffe09a;
+  --red: #e84855;
+  --blue: #3d8bff;
+  --green: #2ecc71;
+  --purple: #b07cf7;
+  --pink: #f4679b;
+  --cyan: #38c8d9;
+
+  /* Layout */
+  --nav-h: 64px;
+  --max-w: 760px;
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+
+  /* Shadows */
+  --shadow-card: 0 18px 50px -22px rgba(0, 0, 0, .85);
+  --shadow-glow: 0 0 36px -10px rgba(240, 194, 75, .4);
+  --shadow-live: 0 0 24px -8px rgba(255, 71, 87, .45);
+
+  /* Transitions */
+  --t-fast: .15s;
+  --t-med: .25s;
+  --t-slow: .5s;
+}
+
+[data-theme="light"] {
+  --bg: #f5f7fc;
+  --bg2: #ffffff;
+  --card: rgba(0, 0, 0, .04);
+  --card2: rgba(0, 0, 0, .06);
+  --line: rgba(0, 0, 0, .10);
+  --txt: #0a0e22;
+  --mut: #5a6582;
+  --dim: #97a0b9;
+}

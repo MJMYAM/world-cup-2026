@@ -1,0 +1,91 @@
+/* bracket.css — Tournament Bracket styles (الخيار D) */
+
+.brk-page {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #060a1c, #0a1028);
+  color: var(--txt);
+  padding: 20px 16px calc(40px + env(safe-area-inset-bottom));
+  overflow-x: auto;
+}
+
+.brk-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; margin-bottom: 22px;
+}
+.brk-header h1 {
+  margin: 0; font-family: "Changa", sans-serif; font-weight: 800; font-size: 22px;
+  background: linear-gradient(110deg, #ffe9b0, var(--gold) 55%, #d9a02c);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.brk-header a {
+  color: var(--gold); text-decoration: none; font-size: 12px; font-weight: 600;
+  background: var(--card); border: 1px solid var(--line);
+  padding: 6px 12px; border-radius: 99px;
+}
+
+.brk-wrapper {
+  display: flex; gap: 32px; align-items: stretch;
+  min-width: max-content;
+  padding: 14px 0;
+}
+
+.brk-round {
+  display: flex; flex-direction: column; justify-content: space-around;
+  gap: 12px; min-width: 220px;
+}
+
+.brk-round-title {
+  font-family: "Changa", sans-serif; font-weight: 700; font-size: 14px;
+  text-align: center; color: var(--mut); margin-bottom: 8px;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+
+.brk-match {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 12px; padding: 8px 10px; position: relative;
+  transition: all var(--t-fast);
+}
+.brk-match.live { border-color: rgba(255, 71, 87, .55); box-shadow: var(--shadow-live); }
+.brk-match.final {
+  border-color: rgba(240, 194, 75, .6);
+  background: radial-gradient(140% 160% at 50% -30%, rgba(240, 194, 75, .16), transparent 60%), var(--card);
+  box-shadow: var(--shadow-glow);
+}
+
+.brk-team {
+  display: flex; align-items: center; gap: 7px; padding: 5px 0;
+  font-size: 12px;
+}
+.brk-team.winner { font-weight: 700; color: var(--gold2); }
+.brk-team.loser { opacity: .5; }
+.brk-team .fl { font-size: 16px; flex-shrink: 0; }
+.brk-team .tn { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.brk-team .sc { font-family: "Changa", sans-serif; font-weight: 800; font-size: 14px; min-width: 18px; text-align: center; }
+
+.brk-meta {
+  display: flex; justify-content: space-between; font-size: 9.5px;
+  color: var(--dim); margin-top: 4px; padding-top: 4px;
+  border-top: 1px dashed var(--line);
+}
+
+.brk-connector {
+  position: absolute; background: var(--line);
+}
+
+@media (max-width: 720px) {
+  .brk-round { min-width: 180px; }
+  .brk-team { font-size: 11px; }
+}
+
+@media (max-width: 480px) {
+  .brk-wrapper { gap: 16px; }
+  .brk-round { min-width: 160px; }
+}
+
+/* Tooltip */
+.brk-tip {
+  position: fixed; background: #0b0f24; color: var(--txt); border: 1px solid var(--gold);
+  padding: 6px 10px; border-radius: 8px; font-size: 11px; pointer-events: none;
+  z-index: 1000; display: none; max-width: 220px; line-height: 1.5;
+}
+.brk-tip.show { display: block; }
