@@ -372,6 +372,41 @@ nav#bn button .ic{font-size:19px;}
 
 .auto-update-dot{animation-name:autoPulse;animation-duration:2s;animation-iteration-count:infinite}
 @keyframes autoPulse{0%{box-shadow:0 0 0 0 rgba(46,204,113,.6)}70%{box-shadow:0 0 0 8px rgba(46,204,113,0)}100%{box-shadow:0 0 0 0 rgba(46,204,113,0)}}
+
+[data-theme="light"]{
+  --bg:#f0f3f9 !important; --bg2:#ffffff !important;
+  --card:rgba(0,0,0,.04) !important; --card2:rgba(0,0,0,.06) !important;
+  --line:rgba(0,0,0,.10) !important;
+  --txt:#0a0e22 !important; --mut:#5a6582 !important; --dim:#97a0b9 !important;
+  --txt-2:#1a2038 !important; --txt-3:#0a0e22 !important; --txt-4:#1a2038 !important;
+  --gold:#b8860b !important; --gold2:#d9a02c !important;
+  --hero-bg1:#ffffff !important; --hero-bg2:#f7f9fd !important;
+  --hdr-bg:rgba(255,255,255,.92) !important;
+  --filters-bg:rgba(255,255,255,.95) !important;
+  --bn-bg:rgba(255,255,255,.97) !important;
+  --inp-color:#0a0e22 !important;
+  --shadow-card:0 18px 50px -22px rgba(0,0,0,.12) !important;
+  --shadow-glow:0 0 36px -10px rgba(184,134,11,.30) !important;
+  --shadow-live:0 0 24px -8px rgba(232,72,85,.20) !important;
+  --border-dash:rgba(0,0,0,.10) !important;
+  --border-dash-2:rgba(0,0,0,.08) !important;
+  --chip-bg:rgba(0,0,0,.05) !important;
+}
+
+/* ===== Theme switcher buttons ===== */
+.theme-toolbar{
+  display:flex; gap:6px; margin-right:8px; flex-shrink:0;
+}
+.theme-btn{
+  width:34px; height:34px; border-radius:50%; border:1px solid var(--line);
+  background:var(--card); font-size:15px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .2s; padding:0; color:var(--txt);
+}
+.theme-btn:hover{background:var(--card2); transform:scale(1.08)}
+.theme-btn:active{transform:scale(.95)}
+.theme-btn.on{background:linear-gradient(135deg,#ffd966,#ffaa00); border-color:#ffaa00}
+
 </style>
 </head>
 <body>
@@ -574,6 +609,49 @@ setInterval(autoUpdateFromESPN, 120000);
   }
 })();
 
+
+
+/* ================= Theme Switcher (Auto/Dark/Light) ================= */
+function applyTheme(theme){
+  var t = theme || "dark";
+  if(t === "auto"){
+    // يتبع إعداد النظام
+    var prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+    t = prefersLight ? "light" : "dark";
+  }
+  document.documentElement.dataset.theme = t;
+  // تحديث أزرار الـtoolbar
+  var btns = {
+    "autoThemeBtn": theme === "auto" || !theme,
+    "darkBtn": theme === "dark",
+    "lightBtn": theme === "light"
+  };
+  Object.keys(btns).forEach(function(id){
+    var b = document.getElementById(id);
+    if(b) b.classList.toggle("on", btns[id]);
+  });
+  localStorage.setItem("wc2026_theme", theme || "auto");
+}
+
+(function(){
+  var saved = localStorage.getItem("wc2026_theme") || "auto";
+  applyTheme(saved);
+  // أحداث الضغط
+  var autoBtn = document.getElementById("autoThemeBtn");
+  var darkBtn = document.getElementById("darkBtn");
+  var lightBtn = document.getElementById("lightBtn");
+  if(autoBtn) autoBtn.addEventListener("click", function(){ applyTheme("auto"); toast("🌓 تلقائي — يتبع نظامك"); });
+  if(darkBtn) darkBtn.addEventListener("click", function(){ applyTheme("dark"); toast("🌙 غامق"); });
+  if(lightBtn) lightBtn.addEventListener("click", function(){ applyTheme("light"); toast("☀️ فاتح"); });
+  // الاستماع لتغييرات النظام (لو في auto)
+  if(window.matchMedia){
+    window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", function(e){
+      var cur = localStorage.getItem("wc2026_theme") || "auto";
+      if(cur === "auto" || !cur) applyTheme("auto");
+    });
+  }
+})();
+
 </script>
 <div class="orbs"><span></span><span></span><span></span></div>
 
@@ -581,6 +659,11 @@ setInterval(autoUpdateFromESPN, 120000);
   <div class="brand">
     <span class="cup">🏆</span>
     <h1>كأس العالم 2026<small>نسخة الجوال 📱 · بتوقيت الكويت</small></h1>
+  </div>
+  <div class="theme-toolbar">
+    <button class="theme-btn" id="autoThemeBtn" title="تلقائي (يتبع النظام)" aria-label="تلقائي">🌓</button>
+    <button class="theme-btn" id="darkBtn" title="غامق" aria-label="غامق">🌙</button>
+    <button class="theme-btn" id="lightBtn" title="فاتح" aria-label="فاتح">☀️</button>
   </div>
   <div class="hosts"><img class="flg" style="height:16px" src="https://flagcdn.com/h40/us.png" alt="🇺🇸" onerror="this.replaceWith(this.alt)"> <img class="flg" style="height:16px" src="https://flagcdn.com/h40/ca.png" alt="🇨🇦" onerror="this.replaceWith(this.alt)"> <img class="flg" style="height:16px" src="https://flagcdn.com/h40/mx.png" alt="🇲🇽" onerror="this.replaceWith(this.alt)"></div>
 </header>
