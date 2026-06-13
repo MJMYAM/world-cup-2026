@@ -260,6 +260,16 @@ main{position:relative; z-index:1; max-width:760px; margin:0 auto; padding:16px 
 
 .goals-btn{width:100%; background:linear-gradient(135deg,rgba(46,204,113,.2),rgba(46,204,113,.05)); border:1px solid rgba(46,204,113,.5); color:#9af0c2; font-family:inherit; font-size:12.5px; font-weight:700; border-radius:12px; padding:10px; cursor:pointer;}
 .goals-btn:disabled{opacity:.6; cursor:wait;}
+
+/* ===== فيديو الأهداف ===== */
+.video-btn{width:100%; margin-top:8px; background:linear-gradient(135deg,rgba(232,72,85,.25),rgba(232,72,85,.08)); border:1px solid rgba(232,72,85,.55); color:#ff9aa3; font-family:inherit; font-size:12.5px; font-weight:700; border-radius:12px; padding:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;}
+.video-btn:active{transform:scale(.98)}
+.video-btn:disabled{opacity:.6; cursor:wait}
+.video-frame{margin-top:8px; position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px; background:#000; border:1px solid var(--line)}
+.video-frame iframe{position:absolute; top:0; left:0; width:100%; height:100%; border:0}
+.video-loading{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.7); color:#fff; font-size:12px; flex-direction:column; gap:8px}
+.video-empty{padding:14px; text-align:center; color:var(--mut); font-size:12px; background:rgba(255,255,255,.03); border:1px dashed var(--line); border-radius:12px; line-height:1.9}
+.video-empty .e{font-size:28px; display:block; margin-bottom:6px}
 .gl-wrap{margin-bottom:2px;}
 .ext-div{height:11px; margin:11px 0; border-bottom:1px solid var(--line);}
 .gl-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
@@ -1156,13 +1166,26 @@ document.body.addEventListener("click",function(e){
       var bx=card.querySelector(".m-ext");
       if(bx&&!bx.innerHTML){
         var goalsBlock='';
+        var videoBlock='';
         if(mm.d){
           var stx=statusOf(mm);
-          if(stx==="live"||stx==="done"){
+          if(stx==="done"){
+            // المباراة انتهت — عرض زر الفيديو
+            videoBlock='<div id="video-'+mn+'"></div>';
             goalsBlock='<div class="gl-empty">الأهداف ستظهر هنا بعد بدء المباراة</div><div class="ext-div"></div>';
+          } else if(stx==="live"){
+            goalsBlock='<div class="gl-empty">🔴 المباراة جارية الآن — الأهداف ستضاف فوراً</div><div class="ext-div"></div>';
           }
         }
-        bx.innerHTML=goalsBlock+'<button class="lu-btn" data-lu="'+mn+'">⚡ جلب التشكيلة والقناة الناقلة الآن</button><div class="lu-note">يبحث مباشرة — التشكيلات تُعلن عادة قبل المباراة بساعة</div>';
+        bx.innerHTML=goalsBlock+videoBlock+'<button class="lu-btn" data-lu="'+mn+'">⚡ جلب التشكيلة والقناة الناقلة الآن</button><div class="lu-note">يبحث مباشرة — التشكيلات تُعلن عادة قبل المباراة بساعة</div>';
+
+        // إذا المباراة انتهت، أضف زر الفيديو تلقائياً
+        if(statusOf(mm)==="done"){
+          var vbox=document.getElementById("video-"+mn);
+          if(vbox){
+            vbox.innerHTML='<button class="video-btn" data-video="'+mn+'">🎬 شاهد أهداف المباراة</button>';
+          }
+        }
       }
     }
   }
@@ -1172,7 +1195,55 @@ document.body.addEventListener("click",function(e){
     var m=getM(n);
     if(m)toast("مباراة "+n+" · "+(m.h||"?")+" ضد "+(m.a||"?"));
   }
+  // زر فيديو الأهداف
+  var vb=e.target.closest("[data-video]");
+  if(vb){loadMatchVideo(+vb.dataset.video, vb);return;}
 });
+
+/* ================= MATCH VIDEO (أهداف المباراة) ================= */
+// بحث عبر YouTube oEmbed (مجاني بدون API key) — يجيب أول فيديو من نتائج البحث
+var VIDEO_CACHE={};
+async function loadMatchVideo(n, btn){
+  var m=getM(n); if(!m) return;
+  var box=document.getElementById("video-"+n);
+  if(!box) return;
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="spin"></span> جاري البحث…';}
+
+  if(VIDEO_CACHE[n]){
+    renderVideo(n, VIDEO_CACHE[n]);
+    return;
+  }
+
+  // بناء استعلام البحث
+  var query=encodeURIComponent(m.h+" vs "+m.a+" highlights goal 2026 world cup");
+  var url="https://www.youtube.com/results?search_query="+query;
+
+  // محاولة 1: Invidious API (مجاني بدون مفتاح)
+  // fallback: oEmbed بحث مبسط
+  try{
+    var r=await fetch("https://inv.nadeko.net/api/v1/search?q="+query+"&type=video&max_results=1");
+    if(r.ok){
+      var data=await r.json();
+      if(data && data.length>0){
+        VIDEO_CACHE[n]={id:data[0].videoId,title:data[0].title};
+        renderVideo(n, VIDEO_CACHE[n]);
+        return;
+      }
+    }
+  }catch(e){}
+
+  // محاولة 2: رابط بحث YouTube يفتح في نافذة جديدة
+  if(btn){btn.disabled=false;btn.innerHTML='🔍 ابحث في YouTube';}
+  box.innerHTML='<div class="video-empty"><span class="e">🎬</span>لم نجد فيديو جاهز — اضغط الزر للبحث في YouTube<button class="video-btn" style="margin-top:8px" onclick="window.open(\'https://www.youtube.com/results?search_query='+query+'\',\'_blank\')">🔍 افتح نتائج YouTube</button></div>';
+  // لو الزر اللي ضغطنا هو نفسه، نحفظه للـonclick
+  if(btn)btn.onclick=function(){window.open('https://www.youtube.com/results?search_query='+query,'_blank');};
+}
+
+function renderVideo(n, v){
+  var box=document.getElementById("video-"+n);
+  if(!box) return;
+  box.innerHTML='<div class="video-frame"><iframe src="https://www.youtube.com/embed/'+v.id+'?rel=0&modestbranding=1" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe></div><div style="font-size:11px;color:var(--mut);text-align:center;margin-top:5px;line-height:1.6">▶ '+v.title+'</div>';
+}
 document.getElementById("roundPills").addEventListener("click",function(e){var p=e.target.closest(".pill");if(!p)return;state.round=p.dataset.round;document.querySelectorAll("#roundPills .pill").forEach(function(x){x.classList.toggle("on",x===p);});applyFilters();});
 document.getElementById("q").addEventListener("input",function(e){state.q=e.target.value;applyFilters();});
 document.getElementById("qClr").addEventListener("click",function(){state.q="";document.getElementById("q").value="";applyFilters();});
