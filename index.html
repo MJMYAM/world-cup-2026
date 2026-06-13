@@ -359,6 +359,16 @@ nav#bn button .ic{font-size:19px;}
 /* أعلام كصور */
 .flg{height:1em; width:auto; border-radius:.14em; box-shadow:0 1px 3px rgba(0,0,0,.45); vertical-align:-.12em;}
 
+
+/* ===== فيديو beIN SPORTS ===== */
+.video-btn{width:100%;margin-top:8px;background:linear-gradient(135deg,rgba(232,72,85,.25),rgba(232,72,85,.08));border:1px solid rgba(232,72,85,.55);color:#ff9aa3;font-family:inherit;font-size:12.5px;font-weight:700;border-radius:12px;padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;transition:transform .15s}
+.video-btn:active{transform:scale(.98)}
+.video-btn:disabled{opacity:.6;cursor:wait}
+.video-frame{margin-top:8px;position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;background:#000;border:1px solid var(--line)}
+.video-frame iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+.video-empty{padding:14px;text-align:center;color:var(--mut);font-size:12px;background:var(--chip-bg,rgba(255,255,255,.03));border:1px dashed var(--line);border-radius:12px;line-height:1.9}
+.video-empty .e{font-size:28px;display:block;margin-bottom:6px}
+
 </style>
 </head>
 <body>
@@ -367,7 +377,118 @@ nav#bn button .ic{font-size:19px;}
   <h2 style="margin:6px 0;font-size:20px">جدول كأس العالم 2026 التفاعلي</h2>
   <p style="margin:0;color:#94a0c6;font-size:14px;line-height:2;max-width:340px">أنت تشاهد معاينة فقط — جهازك لم يشغّل الكود التفاعلي.<br>افتح الجدول عبر <b style="color:#f0c24b">الرابط المباشر</b> الذي وصلك، أو افتح الملف بمتصفح Chrome.</p>
 </div>
-<script>try{document.getElementById("jsband").style.display="none";}catch(e){}</script>
+<script>try{document.getElementById("jsband").style.display="none";}catch(e){}
+
+/* ================= MATCH VIDEO (ملخص beIN SPORTS) ================= */
+var BEIN_CHANNEL_ID="UCJUCcJUeh0Cz2xyKwkw5Q1w";
+var VIDEO_CACHE={};
+var BEIN_FEED_CACHE=null;
+var BEIN_FEED_TS=0;
+
+function decodeXmlEntities(s){
+  return s.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&#(\d+);/g,function(m,n){return String.fromCharCode(parseInt(n,10));});
+}
+
+function parseRssXml(xmlText){
+  var entries=[];
+  var entryRe=/<entry>([\s\S]*?)<\/entry>/g, m;
+  while((m=entryRe.exec(xmlText))!==null){
+    var block=m[1];
+    var idM=block.match(/<yt:videoId>([^<]+)<\/yt:videoId>/);
+    var titleM=block.match(/<title>([^<]+)<\/title>/);
+    if(idM && titleM) entries.push({id:idM[1].trim(),title:decodeXmlEntities(titleM[1].trim())});
+  }
+  return entries;
+}
+
+async function loadBeinFeed(){
+  if(BEIN_FEED_CACHE && (Date.now()-BEIN_FEED_TS)<1800000) return BEIN_FEED_CACHE;
+  try{
+    var r=await fetch("https://www.youtube.com/feeds/videos.xml?channel_id="+BEIN_CHANNEL_ID);
+    if(r.ok){
+      var txt=await r.text();
+      var p=parseRssXml(txt);
+      if(p.length>0){BEIN_FEED_CACHE=p;BEIN_FEED_TS=Date.now();return p;}
+    }
+  }catch(e){}
+  return [];
+}
+
+function normalizeAr(s){
+  return (s||"").replace(/[أإآا]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه").replace(/[\u064B-\u0652]/g,"").replace(/\s+/g," ").trim();
+}
+
+function findBeinVideo(feed, m){
+  var h=normalizeAr(m.h).split(" ")[0], a=normalizeAr(m.a).split(" ")[0];
+  for(var i=0;i<feed.length;i++){
+    var t=normalizeAr(feed[i].title);
+    if(t.indexOf(h)>=0 && t.indexOf(a)>=0) return feed[i];
+  }
+  return null;
+}
+
+async function loadMatchVideo(n, btn){
+  var m=getM(n);
+  if(!m) return;
+  var box=document.getElementById("video-"+n);
+  if(!box) return;
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="spin"></span> جاري البحث في beIN SPORTS…';}
+  if(VIDEO_CACHE[n]){renderVideo(n,VIDEO_CACHE[n]);return;}
+
+  var feed=await loadBeinFeed();
+  if(feed.length===0){
+    if(btn){btn.disabled=false;btn.innerHTML='🎬 شاهد على YouTube';}
+    var q=encodeURIComponent(m.h+" ضد "+m.a+" beIN SPORTS ملخص");
+    box.innerHTML='<div class="video-empty"><span class="e">🎬</span>ملخص المباراة على YouTube<div style="display:flex;flex-direction:column;gap:6px;margin-top:10px"><a class="video-btn" href="https://www.youtube.com/results?search_query='+q+'" target="_blank" rel="noopener">🔍 ابحث "'+m.h+' ضد '+m.a+'"</a><a class="video-btn" href="https://www.youtube.com/@beINSPORTS/videos" target="_blank" rel="noopener">📺 كل ملخصات beIN</a></div></div>';
+    return;
+  }
+
+  var v=findBeinVideo(feed, m);
+  if(v){VIDEO_CACHE[n]=v;renderVideo(n,v);}
+  else{
+    if(btn){btn.disabled=false;btn.innerHTML='🎬 ملخصات beIN';}
+    var list=feed.slice(0,5).map(function(x){
+      return '<a href="https://www.youtube.com/watch?v='+x.id+'" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line);text-decoration:none;color:var(--txt)"><span style="font-size:18px;flex-shrink:0">▶️</span><span style="flex:1;font-size:11.5px;line-height:1.5">'+x.title+'</span></a>';
+    }).join("");
+    box.innerHTML='<div class="video-empty"><span class="e">🎬</span>أحدث ملخصات beIN SPORTS:<div style="text-align:right;margin-top:6px">'+list+'</div></div>';
+  }
+}
+
+function renderVideo(n, v){
+  var box=document.getElementById("video-"+n);
+  if(!box) return;
+  box.innerHTML=
+    '<div class="video-frame">'+
+      '<iframe src="https://www.youtube.com/embed/'+v.id+'?rel=0&modestbranding=1&hl=ar" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>'+
+    '</div>'+
+    '<div style="font-size:11.5px;color:var(--mut);text-align:center;margin-top:6px;line-height:1.6">▶ '+v.title+
+    '<br><a href="https://www.youtube.com/watch?v='+v.id+'" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;font-size:10.5px">↗ افتح على YouTube</a></div>'+
+    '<div style="text-align:center;font-size:10px;color:var(--dim);margin-top:3px">📺 beIN SPORTS · الناقل الحصري</div>';
+}
+
+// ربط الزر بحذف body click handler (v1 يتعامل مع .match)
+document.body.addEventListener("click", function(e){
+  var vb = e.target.closest("[data-video]");
+  if(vb){ loadMatchVideo(+vb.dataset.video, vb); }
+});
+
+/* حقن زر الفيديو تلقائياً عند فتح البطاقات المنتهية */
+var _videoBtnObserver = new MutationObserver(function(){
+  document.querySelectorAll(".match.done").forEach(function(card){
+    if(card.dataset.vidInjected) return;
+    var ext = card.querySelector(".m-ext");
+    if(!ext || ext.querySelector(".video-btn")) return;
+    card.dataset.vidInjected = "1";
+    var mn = card.dataset.mn;
+    var container = document.createElement("div");
+    container.id = "video-"+mn;
+    container.innerHTML = '<button class="video-btn" data-video="'+mn+'">🎬 شاهد ملخص المباراة على beIN SPORTS</button>';
+    ext.insertBefore(container, ext.firstChild);
+  });
+});
+_videoBtnObserver.observe(document.body, {subtree:true, childList:true});
+
+</script>
 <div class="orbs"><span></span><span></span><span></span></div>
 
 <header>
