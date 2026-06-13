@@ -893,12 +893,12 @@ function renderGroups(){
     return en;
   }
   el.innerHTML=Object.keys(GROUPS).map(function(g){
-    // حساب الإحصائيات الحقيقية من نتائج ESPN (إن وُجدت) أو من SC_CACHE
+    // خانة واحدة فقط: جدول منظّم بأعمدة (لعب | فارق | نقاط)
+    // بدون قائمة منفصلة للمنتخبات فوق
     var stats={};
     GROUPS[g].forEach(function(t){
       stats[t]={name:t,p:0,gf:0,ga:0,gd:0,pts:0};
     });
-    // 1) من ESPN standings (إن وُجدت)
     if(ST_CACHE[g] && ST_CACHE[g].rows && ST_CACHE[g].rows.length){
       ST_CACHE[g].rows.forEach(function(r){
         var arName=getArName(r.t);
@@ -911,7 +911,6 @@ function renderGroups(){
         }
       });
     } else {
-      // 2) من النتائج الحية (SC_CACHE) — لو في مباريات انتهت
       M.forEach(function(m){
         if(m.g!==g)return;
         var sc=SC_CACHE[m.n];
@@ -926,7 +925,6 @@ function renderGroups(){
       });
       Object.keys(stats).forEach(function(k){stats[k].gd=stats[k].gf-stats[k].ga;});
     }
-    // ترتيب: نقاط ثم فارق أهداف ثم أهداف مسجلة
     var rows=Object.values(stats).sort(function(a,b){
       if(b.pts!==a.pts)return b.pts-a.pts;
       if(b.gd!==a.gd)return b.gd-a.gd;
@@ -936,7 +934,6 @@ function renderGroups(){
 
     var html='<div class="grp"><span class="big">'+g+'</span>';
     html+='<h3><span class="ltr">'+g+'</span>المجموعة '+g+'</h3>';
-    // خانة واحدة: جدول منظّم بأعمدة
     html+='<table class="sttbl" style="margin-top:0">';
     html+='<tr><th style="width:34px">#</th><th class="t" style="text-align:right">المنتخب</th><th style="width:48px">لعب</th><th style="width:54px">+/-</th><th style="width:60px">نقاط</th></tr>';
     rows.forEach(function(r,i){
