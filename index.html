@@ -877,14 +877,85 @@ function resetFilters(){
 /* ================= GROUPS TAB ================= */
 function renderGroups(){
   var el=document.getElementById("groupGrid");
+  // خانة مساعدة: ترجمة الاسم الإنجليزي للعربي
+  function getArName(en){
+    if(!en)return en;
+    for(var gk in GROUPS){
+      for(var i=0;i<GROUPS[gk].length;i++){
+        if(normEn(GROUPS[gk][i])===normEn(en))return GROUPS[gk][i];
+      }
+    }
+    if(typeof ALIAS!=="undefined"){
+      for(var ak in ALIAS){
+        if(ALIAS[ak].some(function(a){return normEn(a)===normEn(en);}))return ak;
+      }
+    }
+    return en;
+  }
   el.innerHTML=Object.keys(GROUPS).map(function(g){
-    var rows=GROUPS[g].map(function(t){
-      return '<div class="trow" data-team="'+t+'"><span class="fl">'+flagImg(t)+'</span><span class="tn">'+t+'</span><span class="go">‹ مبارياته</span></div>';
-    }).join("");
-    return '<div class="grp"><span class="big">'+g+'</span><h3><span class="ltr">'+g+'</span>المجموعة '+g+'</h3>'+rows
-      +'<button class="stbtn" data-st="'+g+'">📊 الترتيب المباشر للمجموعة '+g+'</button>'
-      +'<div id="st-'+g+'"></div>'
-      +'<button class="gbtn" data-gomatches-group="'+g+'">📅 عرض مباريات المجموعة '+g+'</button></div>';
+    // حساب الإحصائيات الحقيقية من نتائج ESPN (إن وُجدت) أو من SC_CACHE
+    var stats={};
+    GROUPS[g].forEach(function(t){
+      stats[t]={name:t,p:0,gf:0,ga:0,gd:0,pts:0};
+    });
+    // 1) من ESPN standings (إن وُجدت)
+    if(ST_CACHE[g] && ST_CACHE[g].rows && ST_CACHE[g].rows.length){
+      ST_CACHE[g].rows.forEach(function(r){
+        var arName=getArName(r.t);
+        if(stats[arName]){
+          stats[arName].p=parseInt(r.p,10)||0;
+          stats[arName].gf=parseInt(r.gf,10)||0;
+          stats[arName].ga=parseInt(r.ga,10)||0;
+          stats[arName].gd=parseInt(String(r.gd).replace("+",""),10)||0;
+          stats[arName].pts=parseInt(r.pts,10)||0;
+        }
+      });
+    } else {
+      // 2) من النتائج الحية (SC_CACHE) — لو في مباريات انتهت
+      M.forEach(function(m){
+        if(m.g!==g)return;
+        var sc=SC_CACHE[m.n];
+        if(!sc||!sc.found||sc.status!=="finished")return;
+        if(!stats[m.h]||!stats[m.a])return;
+        stats[m.h].p++; stats[m.a].p++;
+        stats[m.h].gf+=sc.sh; stats[m.h].ga+=sc.sa;
+        stats[m.a].gf+=sc.sa; stats[m.a].ga+=sc.sh;
+        if(sc.sh>sc.sa){stats[m.h].pts+=3;}
+        else if(sc.sh<sc.sa){stats[m.a].pts+=3;}
+        else{stats[m.h].pts+=1;stats[m.a].pts+=1;}
+      });
+      Object.keys(stats).forEach(function(k){stats[k].gd=stats[k].gf-stats[k].ga;});
+    }
+    // ترتيب: نقاط ثم فارق أهداف ثم أهداف مسجلة
+    var rows=Object.values(stats).sort(function(a,b){
+      if(b.pts!==a.pts)return b.pts-a.pts;
+      if(b.gd!==a.gd)return b.gd-a.gd;
+      if(b.gf!==a.gf)return b.gf-a.gf;
+      return 0;
+    });
+
+    var html='<div class="grp"><span class="big">'+g+'</span>';
+    html+='<h3><span class="ltr">'+g+'</span>المجموعة '+g+'</h3>';
+    // خانة واحدة: جدول منظّم بأعمدة
+    html+='<table class="sttbl" style="margin-top:0">';
+    html+='<tr><th style="width:34px">#</th><th class="t" style="text-align:right">المنتخب</th><th style="width:48px">لعب</th><th style="width:54px">+/-</th><th style="width:60px">نقاط</th></tr>';
+    rows.forEach(function(r,i){
+      var pos=i+1;
+      var cls=pos<=2?"q":(pos===3?"m3":"");
+      var gdColor=r.gd>0?"#7ee2ab":(r.gd<0?"#ff9aa3":"var(--mut)");
+      var gdText=r.gd===0?"0":(r.gd>0?"+":"−")+Math.abs(r.gd);
+      html+='<tr class="'+cls+'">';
+      html+='<td><span class="pos">'+(pos)+'</span></td>';
+      html+='<td class="t" data-team="'+r.name+'">'+flagImg(r.name)+' '+r.name+'</td>';
+      html+='<td style="font-size:13px">'+r.p+'</td>';
+      html+='<td style="font-size:15px;font-family:Changa,sans-serif;font-weight:800;color:'+gdColor+'">'+gdText+'</td>';
+      html+='<td class="pts">'+r.pts+'</td>';
+      html+='</tr>';
+    });
+    html+='</table>';
+    html+='<button class="gbtn" data-gomatches-group="'+g+'">📅 عرض مباريات المجموعة '+g+'</button>';
+    html+='</div>';
+    return html;
   }).join("");
 }
 
