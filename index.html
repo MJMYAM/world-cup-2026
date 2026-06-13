@@ -1201,48 +1201,127 @@ document.body.addEventListener("click",function(e){
 });
 
 /* ================= MATCH VIDEO (أهداف المباراة) ================= */
-// بحث عبر YouTube oEmbed (مجاني بدون API key) — يجيب أول فيديو من نتائج البحث
+// جلب ملخصات beIN SPORTS من YouTube RSS feed — مجاني بدون API key
+var BEIN_CHANNEL_ID="UCJUCcJUeh0Cz2xyKwkw5Q1w";
+var BEIN_FEED_URL="https://www.youtube.com/feeds/videos.xml?channel_id="+BEIN_CHANNEL_ID;
 var VIDEO_CACHE={};
+var BEIN_FEED_CACHE=null; // تخزين مؤقت للـRSS feed
+var BEIN_FEED_TS=0;
+
+function decodeXmlEntities(s){
+  return s.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&#(\d+);/g,function(m,n){return String.fromCharCode(parseInt(n,10));});
+}
+
+function parseRssXml(xmlText){
+  // Parse بسيط لاستخراج videoId + title من entries
+  var entries=[];
+  var entryRe=/<entry>([\s\S]*?)<\/entry>/g;
+  var m;
+  while((m=entryRe.exec(xmlText))!==null){
+    var block=m[1];
+    var idM=block.match(/<yt:videoId>([^<]+)<\/yt:videoId>/);
+    var titleM=block.match(/<title>([^<]+)<\/title>/);
+    var pubM=block.match(/<published>([^<]+)<\/published>/);
+    if(idM && titleM){
+      entries.push({
+        id: idM[1].trim(),
+        title: decodeXmlEntities(titleM[1].trim()),
+        published: pubM ? pubM[1].trim() : ""
+      });
+    }
+  }
+  return entries;
+}
+
+async function loadBeinFeed(){
+  // كاش لمدة 30 دقيقة
+  if(BEIN_FEED_CACHE && (Date.now()-BEIN_FEED_TS)<1800000) return BEIN_FEED_CACHE;
+  try{
+    var r=await fetch(BEIN_FEED_URL);
+    if(!r.ok) throw new Error("rss-fail");
+    var txt=await r.text();
+    BEIN_FEED_CACHE=parseRssXml(txt);
+    BEIN_FEED_TS=Date.now();
+    return BEIN_FEED_CACHE;
+  }catch(e){
+    console.warn("beIN RSS failed",e);
+    return [];
+  }
+}
+
+function normalizeAr(s){
+  // تطبيع الاسم العربي للمطابقة: إزالة التشكيل، همزة→ا، ة→ه، ى→ي
+  return (s||"").replace(/[أإآا]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه").replace(/[\u064B-\u0652]/g,"").replace(/\s+/g," ").trim();
+}
+
+function findBeinVideo(feed, m){
+  // نبحث في feed عن فيديو يذكر الفريقين
+  var h=normalizeAr(m.h);
+  var a=normalizeAr(m.a);
+  // كلمات بحث: أول كلمة من كل فريق (لأن بي ان أحياناً يختصر)
+  var hKey=normalizeAr(m.h).split(" ")[0];
+  var aKey=normalizeAr(m.a).split(" ")[0];
+  // تطابق كامل أولاً
+  for(var i=0;i<feed.length;i++){
+    var t=normalizeAr(feed[i].title);
+    if(t.indexOf(hKey)>=0 && t.indexOf(aKey)>=0) return feed[i];
+  }
+  // محاولة ثانية: كلمة من كل فريق
+  for(var j=0;j<feed.length;j++){
+    var tt=normalizeAr(feed[j].title);
+    var hWords=normalizeAr(m.h).split(" ");
+    var aWords=normalizeAr(m.a).split(" ");
+    var hMatch=hWords.some(function(w){return w.length>=3 && tt.indexOf(w)>=0;});
+    var aMatch=aWords.some(function(w){return w.length>=3 && tt.indexOf(w)>=0;});
+    if(hMatch && aMatch) return feed[j];
+  }
+  return null;
+}
+
 async function loadMatchVideo(n, btn){
   var m=getM(n); if(!m) return;
   var box=document.getElementById("video-"+n);
   if(!box) return;
-  if(btn){btn.disabled=true;btn.innerHTML='<span class="spin"></span> جاري البحث…';}
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="spin"></span> جاري البحث في beIN SPORTS…';}
 
   if(VIDEO_CACHE[n]){
     renderVideo(n, VIDEO_CACHE[n]);
     return;
   }
 
-  // بناء استعلام البحث
-  var query=encodeURIComponent(m.h+" vs "+m.a+" highlights goal 2026 world cup");
-  var url="https://www.youtube.com/results?search_query="+query;
+  // جيب feed beIN
+  var feed=await loadBeinFeed();
+  if(feed.length===0){
+    if(btn){btn.disabled=false;btn.innerHTML='🎬 حاول مرة ثانية';}
+    box.innerHTML='<div class="video-empty"><span class="e">⚠️</span>تعذّر الاتصال بـ YouTube — تحقق من الإنترنت</div>';
+    return;
+  }
 
-  // محاولة 1: Invidious API (مجاني بدون مفتاح)
-  // fallback: oEmbed بحث مبسط
-  try{
-    var r=await fetch("https://inv.nadeko.net/api/v1/search?q="+query+"&type=video&max_results=1");
-    if(r.ok){
-      var data=await r.json();
-      if(data && data.length>0){
-        VIDEO_CACHE[n]={id:data[0].videoId,title:data[0].title};
-        renderVideo(n, VIDEO_CACHE[n]);
-        return;
-      }
-    }
-  }catch(e){}
-
-  // محاولة 2: رابط بحث YouTube يفتح في نافذة جديدة
-  if(btn){btn.disabled=false;btn.innerHTML='🔍 ابحث في YouTube';}
-  box.innerHTML='<div class="video-empty"><span class="e">🎬</span>لم نجد فيديو جاهز — اضغط الزر للبحث في YouTube<button class="video-btn" style="margin-top:8px" onclick="window.open(\'https://www.youtube.com/results?search_query='+query+'\',\'_blank\')">🔍 افتح نتائج YouTube</button></div>';
-  // لو الزر اللي ضغطنا هو نفسه، نحفظه للـonclick
-  if(btn)btn.onclick=function(){window.open('https://www.youtube.com/results?search_query='+query,'_blank');};
+  var v=findBeinVideo(feed, m);
+  if(v){
+    VIDEO_CACHE[n]=v;
+    renderVideo(n, v);
+  } else {
+    if(btn){btn.disabled=false;btn.innerHTML='🎬 شاهد كل ملخصات beIN SPORTS';}
+    // اعرض آخر 3 فيديوهات من beIN كبديل
+    var list=feed.slice(0,3).map(function(x){
+      return '<div style="display:flex;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line)"><span style="font-size:18px">▶️</span><a href="https://www.youtube.com/watch?v='+x.id+'" target="_blank" rel="noopener" style="flex:1;color:var(--txt);text-decoration:none;font-size:12px;line-height:1.4">'+x.title+'</a></div>';
+    }).join("");
+    box.innerHTML='<div class="video-empty"><span class="e">🎬</span>لم نجد ملخص هذه المباراة — أحدث ملخصات beIN:<div style="text-align:right;margin-top:8px">'+list+'</div></div>';
+    if(btn)btn.onclick=function(){window.open('https://www.youtube.com/@beINSPORTS/videos','_blank');};
+  }
 }
 
 function renderVideo(n, v){
   var box=document.getElementById("video-"+n);
   if(!box) return;
-  box.innerHTML='<div class="video-frame"><iframe src="https://www.youtube.com/embed/'+v.id+'?rel=0&modestbranding=1" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe></div><div style="font-size:11px;color:var(--mut);text-align:center;margin-top:5px;line-height:1.6">▶ '+v.title+'</div>';
+  box.innerHTML=
+    '<div class="video-frame">'+
+      '<iframe src="https://www.youtube.com/embed/'+v.id+'?rel=0&modestbranding=1&hl=ar" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>'+
+    '</div>'+
+    '<div style="font-size:11.5px;color:var(--mut);text-align:center;margin-top:6px;line-height:1.6">▶ '+v.title+
+    '<br><a href="https://www.youtube.com/watch?v='+v.id+'" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;font-size:10.5px">↗ افتح على YouTube</a></div>'+
+    '<div style="text-align:center;font-size:10px;color:var(--dim);margin-top:3px">📺 beIN SPORTS · الناقل الحصري</div>';
 }
 document.getElementById("roundPills").addEventListener("click",function(e){var p=e.target.closest(".pill");if(!p)return;state.round=p.dataset.round;document.querySelectorAll("#roundPills .pill").forEach(function(x){x.classList.toggle("on",x===p);});applyFilters();});
 document.getElementById("q").addEventListener("input",function(e){state.q=e.target.value;applyFilters();});
