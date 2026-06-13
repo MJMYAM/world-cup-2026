@@ -359,54 +359,6 @@ nav#bn button .ic{font-size:19px;}
 /* أعلام كصور */
 .flg{height:1em; width:auto; border-radius:.14em; box-shadow:0 1px 3px rgba(0,0,0,.45); vertical-align:-.12em;}
 
-
-/* ===== فيديو beIN SPORTS ===== */
-.video-btn{width:100%;margin-top:8px;background:linear-gradient(135deg,rgba(232,72,85,.25),rgba(232,72,85,.08));border:1px solid rgba(232,72,85,.55);color:#ff9aa3;font-family:inherit;font-size:12.5px;font-weight:700;border-radius:12px;padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;transition:transform .15s}
-.video-btn:active{transform:scale(.98)}
-.video-btn:disabled{opacity:.6;cursor:wait}
-.video-frame{margin-top:8px;position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;background:#000;border:1px solid var(--line)}
-.video-frame iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
-.video-empty{padding:14px;text-align:center;color:var(--mut);font-size:12px;background:var(--chip-bg,rgba(255,255,255,.03));border:1px dashed var(--line);border-radius:12px;line-height:1.9}
-.video-empty .e{font-size:28px;display:block;margin-bottom:6px}
-
-
-.auto-update-dot{animation-name:autoPulse;animation-duration:2s;animation-iteration-count:infinite}
-@keyframes autoPulse{0%{box-shadow:0 0 0 0 rgba(46,204,113,.6)}70%{box-shadow:0 0 0 8px rgba(46,204,113,0)}100%{box-shadow:0 0 0 0 rgba(46,204,113,0)}}
-
-[data-theme="light"]{
-  --bg:#f0f3f9 !important; --bg2:#ffffff !important;
-  --card:rgba(0,0,0,.04) !important; --card2:rgba(0,0,0,.06) !important;
-  --line:rgba(0,0,0,.10) !important;
-  --txt:#0a0e22 !important; --mut:#5a6582 !important; --dim:#97a0b9 !important;
-  --txt-2:#1a2038 !important; --txt-3:#0a0e22 !important; --txt-4:#1a2038 !important;
-  --gold:#b8860b !important; --gold2:#d9a02c !important;
-  --hero-bg1:#ffffff !important; --hero-bg2:#f7f9fd !important;
-  --hdr-bg:rgba(255,255,255,.92) !important;
-  --filters-bg:rgba(255,255,255,.95) !important;
-  --bn-bg:rgba(255,255,255,.97) !important;
-  --inp-color:#0a0e22 !important;
-  --shadow-card:0 18px 50px -22px rgba(0,0,0,.12) !important;
-  --shadow-glow:0 0 36px -10px rgba(184,134,11,.30) !important;
-  --shadow-live:0 0 24px -8px rgba(232,72,85,.20) !important;
-  --border-dash:rgba(0,0,0,.10) !important;
-  --border-dash-2:rgba(0,0,0,.08) !important;
-  --chip-bg:rgba(0,0,0,.05) !important;
-}
-
-/* ===== Theme switcher buttons ===== */
-.theme-toolbar{
-  display:flex; gap:6px; margin-right:8px; flex-shrink:0;
-}
-.theme-btn{
-  width:34px; height:34px; border-radius:50%; border:1px solid var(--line);
-  background:var(--card); font-size:15px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  transition:all .2s; padding:0; color:var(--txt);
-}
-.theme-btn:hover{background:var(--card2); transform:scale(1.08)}
-.theme-btn:active{transform:scale(.95)}
-.theme-btn.on{background:linear-gradient(135deg,#ffd966,#ffaa00); border-color:#ffaa00}
-
 </style>
 </head>
 <body>
@@ -415,255 +367,13 @@ nav#bn button .ic{font-size:19px;}
   <h2 style="margin:6px 0;font-size:20px">جدول كأس العالم 2026 التفاعلي</h2>
   <p style="margin:0;color:#94a0c6;font-size:14px;line-height:2;max-width:340px">أنت تشاهد معاينة فقط — جهازك لم يشغّل الكود التفاعلي.<br>افتح الجدول عبر <b style="color:#f0c24b">الرابط المباشر</b> الذي وصلك، أو افتح الملف بمتصفح Chrome.</p>
 </div>
-<script>try{document.getElementById("jsband").style.display="none";}catch(e){}
-
-/* ================= MATCH VIDEO (ملخص beIN SPORTS) ================= */
-var BEIN_CHANNEL_ID="UCJUCcJUeh0Cz2xyKwkw5Q1w";
-var VIDEO_CACHE={};
-var BEIN_FEED_CACHE=null;
-var BEIN_FEED_TS=0;
-
-function decodeXmlEntities(s){
-  return s.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&#(\d+);/g,function(m,n){return String.fromCharCode(parseInt(n,10));});
-}
-
-function parseRssXml(xmlText){
-  var entries=[];
-  var entryRe=/<entry>([\s\S]*?)<\/entry>/g, m;
-  while((m=entryRe.exec(xmlText))!==null){
-    var block=m[1];
-    var idM=block.match(/<yt:videoId>([^<]+)<\/yt:videoId>/);
-    var titleM=block.match(/<title>([^<]+)<\/title>/);
-    if(idM && titleM) entries.push({id:idM[1].trim(),title:decodeXmlEntities(titleM[1].trim())});
-  }
-  return entries;
-}
-
-async function loadBeinFeed(){
-  if(BEIN_FEED_CACHE && (Date.now()-BEIN_FEED_TS)<1800000) return BEIN_FEED_CACHE;
-  try{
-    var r=await fetch("https://www.youtube.com/feeds/videos.xml?channel_id="+BEIN_CHANNEL_ID);
-    if(r.ok){
-      var txt=await r.text();
-      var p=parseRssXml(txt);
-      if(p.length>0){BEIN_FEED_CACHE=p;BEIN_FEED_TS=Date.now();return p;}
-    }
-  }catch(e){}
-  return [];
-}
-
-function normalizeAr(s){
-  return (s||"").replace(/[أإآا]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه").replace(/[\u064B-\u0652]/g,"").replace(/\s+/g," ").trim();
-}
-
-function findBeinVideo(feed, m){
-  var h=normalizeAr(m.h).split(" ")[0], a=normalizeAr(m.a).split(" ")[0];
-  for(var i=0;i<feed.length;i++){
-    var t=normalizeAr(feed[i].title);
-    if(t.indexOf(h)>=0 && t.indexOf(a)>=0) return feed[i];
-  }
-  return null;
-}
-
-async function loadMatchVideo(n, btn){
-  var m=getM(n);
-  if(!m) return;
-  var box=document.getElementById("video-"+n);
-  if(!box) return;
-  if(btn){btn.disabled=true;btn.innerHTML='<span class="spin"></span> جاري البحث في beIN SPORTS…';}
-  if(VIDEO_CACHE[n]){renderVideo(n,VIDEO_CACHE[n]);return;}
-
-  var feed=await loadBeinFeed();
-  if(feed.length===0){
-    if(btn){btn.disabled=false;btn.innerHTML='🎬 شاهد على YouTube';}
-    var q=encodeURIComponent(m.h+" ضد "+m.a+" beIN SPORTS ملخص");
-    box.innerHTML='<div class="video-empty"><span class="e">🎬</span>ملخص المباراة على YouTube<div style="display:flex;flex-direction:column;gap:6px;margin-top:10px"><a class="video-btn" href="https://www.youtube.com/results?search_query='+q+'" target="_blank" rel="noopener">🔍 ابحث "'+m.h+' ضد '+m.a+'"</a><a class="video-btn" href="https://www.youtube.com/@beINSPORTS/videos" target="_blank" rel="noopener">📺 كل ملخصات beIN</a></div></div>';
-    return;
-  }
-
-  var v=findBeinVideo(feed, m);
-  if(v){VIDEO_CACHE[n]=v;renderVideo(n,v);}
-  else{
-    if(btn){btn.disabled=false;btn.innerHTML='🎬 ملخصات beIN';}
-    var list=feed.slice(0,5).map(function(x){
-      return '<a href="https://www.youtube.com/watch?v='+x.id+'" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line);text-decoration:none;color:var(--txt)"><span style="font-size:18px;flex-shrink:0">▶️</span><span style="flex:1;font-size:11.5px;line-height:1.5">'+x.title+'</span></a>';
-    }).join("");
-    box.innerHTML='<div class="video-empty"><span class="e">🎬</span>أحدث ملخصات beIN SPORTS:<div style="text-align:right;margin-top:6px">'+list+'</div></div>';
-  }
-}
-
-function renderVideo(n, v){
-  var box=document.getElementById("video-"+n);
-  if(!box) return;
-  box.innerHTML=
-    '<div class="video-frame">'+
-      '<iframe src="https://www.youtube.com/embed/'+v.id+'?rel=0&modestbranding=1&hl=ar" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>'+
-    '</div>'+
-    '<div style="font-size:11.5px;color:var(--mut);text-align:center;margin-top:6px;line-height:1.6">▶ '+v.title+
-    '<br><a href="https://www.youtube.com/watch?v='+v.id+'" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;font-size:10.5px">↗ افتح على YouTube</a></div>'+
-    '<div style="text-align:center;font-size:10px;color:var(--dim);margin-top:3px">📺 beIN SPORTS · الناقل الحصري</div>';
-}
-
-// ربط الزر بحذف body click handler (v1 يتعامل مع .match)
-document.body.addEventListener("click", function(e){
-  var vb = e.target.closest("[data-video]");
-  if(vb){ loadMatchVideo(+vb.dataset.video, vb); }
-});
-
-/* حقن زر الفيديو تلقائياً عند فتح البطاقات المنتهية */
-var _videoBtnObserver = new MutationObserver(function(){
-  document.querySelectorAll(".match.done").forEach(function(card){
-    if(card.dataset.vidInjected) return;
-    var ext = card.querySelector(".m-ext");
-    if(!ext || ext.querySelector(".video-btn")) return;
-    card.dataset.vidInjected = "1";
-    var mn = card.dataset.mn;
-    var container = document.createElement("div");
-    container.id = "video-"+mn;
-    container.innerHTML = '<button class="video-btn" data-video="'+mn+'">🎬 شاهد ملخص المباراة على beIN SPORTS</button>';
-    ext.insertBefore(container, ext.firstChild);
-  });
-});
-_videoBtnObserver.observe(document.body, {subtree:true, childList:true});
-
-
-
-/* ================= التحديث التلقائي من ESPN ================= */
-async function autoUpdateFromESPN(){
-  var badge = document.getElementById("autoUpdateBadge");
-  var txt = document.getElementById("autoUpdateText");
-  if(!badge || !txt) return;
-  try{
-    txt.textContent = "⏳ جاري التحديث من ESPN...";
-    badge.style.opacity = "1";
-    var r = await fetch(ESPN_ST);
-    if(!r.ok) throw new Error("espn");
-    var data = await r.json();
-    var kids = data.children || [];
-    var got = 0;
-    ST_CACHE = {};
-    kids.forEach(function(ch){
-      var mt = /group\s*([A-L])/i.exec((ch.name||"") + " " + (ch.abbreviation||""));
-      if(!mt) return;
-      var g = mt[1].toUpperCase();
-      var ents = ((ch.standings||{}).entries) || [];
-      if(!ents.length) return;
-      var rows = ents.map(function(en){
-        var st = {};
-        (en.stats||[]).forEach(function(x){ if(x && x.name) st[x.name] = x; });
-        function v(names, dv){
-          for(var i=0;i<names.length;i++){
-            var o = st[names[i]];
-            if(o) return dv ? (o.displayValue!=null?o.displayValue:o.value) : (o.value!=null?o.value:o.displayValue);
-          }
-          return 0;
-        }
-        return {
-          t: (en.team||{}).displayName || "",
-          p: v(["gamesPlayed"]),
-          w: v(["wins"]),
-          d: v(["ties","draws"]),
-          l: v(["losses"]),
-          gf: v(["goalsFor","pointsFor"]),
-          ga: v(["goalsAgainst","pointsAgainst"]),
-          gd: v(["pointDifferential","goalDifferential","differential"], true),
-          pts: v(["points"])
-        };
-      });
-      ST_CACHE[g] = { rows: rows };
-      got++;
-    });
-    if(!got) throw new Error("no-data");
-    renderGroups();
-    // إخفاء الـbadge بعد ثانيتين لما يحدّث بنجاح
-    txt.innerHTML = "✅ تم التحديث التلقائي — " + got + " مجموعة (" + new Date().toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"}) + ")";
-    badge.style.background = "rgba(46,204,113,.15)";
-    setTimeout(function(){
-      badge.style.opacity = "0.6";
-    }, 2000);
-    setTimeout(function(){
-      badge.style.opacity = "0.4";
-    }, 8000);
-  }catch(e){
-    txt.textContent = "⚠️ تعذّر الاتصال — يعيد المحاولة خلال دقيقتين";
-    badge.style.background = "rgba(232,72,85,.08)";
-    badge.style.borderColor = "rgba(232,72,85,.25)";
-    badge.style.color = "#ff6b76";
-  }
-}
-
-// تحديث تلقائي كل دقيقتين (120 ثانية)
-setInterval(autoUpdateFromESPN, 120000);
-
-// تحديث فوري عند فتح التطبيق + كل ما يفتح تاب المجموعات
-(function(){
-  // أول تحديث بعد 3 ثواني من التحميل
-  setTimeout(autoUpdateFromESPN, 3000);
-  // تحديث عند فتح تاب المجموعات
-  var origGoTab = typeof goTab === "function" ? goTab : null;
-  if(origGoTab){
-    window.goTab = function(id){
-      origGoTab(id);
-      if(id === "groups") autoUpdateFromESPN();
-    };
-  }
-})();
-
-
-
-/* ================= Theme Switcher (Auto/Dark/Light) ================= */
-function applyTheme(theme){
-  var t = theme || "dark";
-  if(t === "auto"){
-    // يتبع إعداد النظام
-    var prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
-    t = prefersLight ? "light" : "dark";
-  }
-  document.documentElement.dataset.theme = t;
-  // تحديث أزرار الـtoolbar
-  var btns = {
-    "autoThemeBtn": theme === "auto" || !theme,
-    "darkBtn": theme === "dark",
-    "lightBtn": theme === "light"
-  };
-  Object.keys(btns).forEach(function(id){
-    var b = document.getElementById(id);
-    if(b) b.classList.toggle("on", btns[id]);
-  });
-  localStorage.setItem("wc2026_theme", theme || "auto");
-}
-
-(function(){
-  var saved = localStorage.getItem("wc2026_theme") || "auto";
-  applyTheme(saved);
-  // أحداث الضغط
-  var autoBtn = document.getElementById("autoThemeBtn");
-  var darkBtn = document.getElementById("darkBtn");
-  var lightBtn = document.getElementById("lightBtn");
-  if(autoBtn) autoBtn.addEventListener("click", function(){ applyTheme("auto"); toast("🌓 تلقائي — يتبع نظامك"); });
-  if(darkBtn) darkBtn.addEventListener("click", function(){ applyTheme("dark"); toast("🌙 غامق"); });
-  if(lightBtn) lightBtn.addEventListener("click", function(){ applyTheme("light"); toast("☀️ فاتح"); });
-  // الاستماع لتغييرات النظام (لو في auto)
-  if(window.matchMedia){
-    window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", function(e){
-      var cur = localStorage.getItem("wc2026_theme") || "auto";
-      if(cur === "auto" || !cur) applyTheme("auto");
-    });
-  }
-})();
-
-</script>
+<script>try{document.getElementById("jsband").style.display="none";}catch(e){}</script>
 <div class="orbs"><span></span><span></span><span></span></div>
 
 <header>
   <div class="brand">
     <span class="cup">🏆</span>
     <h1>كأس العالم 2026<small>نسخة الجوال 📱 · بتوقيت الكويت</small></h1>
-  </div>
-  <div class="theme-toolbar">
-    <button class="theme-btn" id="autoThemeBtn" title="تلقائي (يتبع النظام)" aria-label="تلقائي">🌓</button>
-    <button class="theme-btn" id="darkBtn" title="غامق" aria-label="غامق">🌙</button>
-    <button class="theme-btn" id="lightBtn" title="فاتح" aria-label="فاتح">☀️</button>
   </div>
   <div class="hosts"><img class="flg" style="height:16px" src="https://flagcdn.com/h40/us.png" alt="🇺🇸" onerror="this.replaceWith(this.alt)"> <img class="flg" style="height:16px" src="https://flagcdn.com/h40/ca.png" alt="🇨🇦" onerror="this.replaceWith(this.alt)"> <img class="flg" style="height:16px" src="https://flagcdn.com/h40/mx.png" alt="🇲🇽" onerror="this.replaceWith(this.alt)"></div>
 </header>
@@ -722,7 +432,6 @@ function applyTheme(theme){
   <!-- ============ GROUPS ============ -->
   <section id="tab-groups" class="tab">
     <div class="sec-t"><i></i>المجموعات الـ12 <span class="cnt">48 منتخبًا</span></div>
-  <div id="autoUpdateBadge" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;padding:7px 10px;background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.25);border-radius:10px;font-size:11px;color:var(--green,#2ecc71)"><span class="auto-update-dot" style="width:6px;height:6px;border-radius:50%;background:var(--green,#2ecc71);box-shadow:0 0 0 0 rgba(46,204,113,.6);animation:autoPulse 2s infinite"></span><span id="autoUpdateText">⏳ جاري التحديث من ESPN...</span></div>
     <div class="ggrid" id="groupGrid"></div>
   </section>
 
@@ -1168,82 +877,14 @@ function resetFilters(){
 /* ================= GROUPS TAB ================= */
 function renderGroups(){
   var el=document.getElementById("groupGrid");
-  // خانة مساعدة: ترجمة الاسم الإنجليزي للعربي
-  function getArName(en){
-    if(!en)return en;
-    for(var gk in GROUPS){
-      for(var i=0;i<GROUPS[gk].length;i++){
-        if(normEn(GROUPS[gk][i])===normEn(en))return GROUPS[gk][i];
-      }
-    }
-    if(typeof ALIAS!=="undefined"){
-      for(var ak in ALIAS){
-        if(ALIAS[ak].some(function(a){return normEn(a)===normEn(en);}))return ak;
-      }
-    }
-    return en;
-  }
   el.innerHTML=Object.keys(GROUPS).map(function(g){
-    // خانة واحدة فقط: جدول منظّم بأعمدة (لعب | فارق | نقاط)
-    // بدون قائمة منفصلة للمنتخبات فوق
-    var stats={};
-    GROUPS[g].forEach(function(t){
-      stats[t]={name:t,p:0,gf:0,ga:0,gd:0,pts:0};
-    });
-    if(ST_CACHE[g] && ST_CACHE[g].rows && ST_CACHE[g].rows.length){
-      ST_CACHE[g].rows.forEach(function(r){
-        var arName=getArName(r.t);
-        if(stats[arName]){
-          stats[arName].p=parseInt(r.p,10)||0;
-          stats[arName].gf=parseInt(r.gf,10)||0;
-          stats[arName].ga=parseInt(r.ga,10)||0;
-          stats[arName].gd=parseInt(String(r.gd).replace("+",""),10)||0;
-          stats[arName].pts=parseInt(r.pts,10)||0;
-        }
-      });
-    } else {
-      M.forEach(function(m){
-        if(m.g!==g)return;
-        var sc=SC_CACHE[m.n];
-        if(!sc||!sc.found||sc.status!=="finished")return;
-        if(!stats[m.h]||!stats[m.a])return;
-        stats[m.h].p++; stats[m.a].p++;
-        stats[m.h].gf+=sc.sh; stats[m.h].ga+=sc.sa;
-        stats[m.a].gf+=sc.sa; stats[m.a].ga+=sc.sh;
-        if(sc.sh>sc.sa){stats[m.h].pts+=3;}
-        else if(sc.sh<sc.sa){stats[m.a].pts+=3;}
-        else{stats[m.h].pts+=1;stats[m.a].pts+=1;}
-      });
-      Object.keys(stats).forEach(function(k){stats[k].gd=stats[k].gf-stats[k].ga;});
-    }
-    var rows=Object.values(stats).sort(function(a,b){
-      if(b.pts!==a.pts)return b.pts-a.pts;
-      if(b.gd!==a.gd)return b.gd-a.gd;
-      if(b.gf!==a.gf)return b.gf-a.gf;
-      return 0;
-    });
-
-    var html='<div class="grp"><span class="big">'+g+'</span>';
-    html+='<h3><span class="ltr">'+g+'</span>المجموعة '+g+'</h3>';
-    html+='<table class="sttbl" style="margin-top:0">';
-    html+='<tr><th style="width:34px">#</th><th class="t" style="text-align:right">المنتخب</th><th style="width:48px">لعب</th><th style="width:54px">+/-</th><th style="width:60px">نقاط</th></tr>';
-    rows.forEach(function(r,i){
-      var pos=i+1;
-      var cls=pos<=2?"q":(pos===3?"m3":"");
-      var gdColor=r.gd>0?"#7ee2ab":(r.gd<0?"#ff9aa3":"var(--mut)");
-      var gdText=r.gd===0?"0":(r.gd>0?"+":"−")+Math.abs(r.gd);
-      html+='<tr class="'+cls+'">';
-      html+='<td><span class="pos">'+(pos)+'</span></td>';
-      html+='<td class="t" data-team="'+r.name+'">'+flagImg(r.name)+' '+r.name+'</td>';
-      html+='<td style="font-size:13px">'+r.p+'</td>';
-      html+='<td style="font-size:15px;font-family:Changa,sans-serif;font-weight:800;color:'+gdColor+'">'+gdText+'</td>';
-      html+='<td class="pts">'+r.pts+'</td>';
-      html+='</tr>';
-    });
-    html+='</table>';
-    html+='<button class="gbtn" data-gomatches-group="'+g+'">📅 عرض مباريات المجموعة '+g+'</button>';
-    html+='</div>';
-    return html;
+    var rows=GROUPS[g].map(function(t){
+      return '<div class="trow" data-team="'+t+'"><span class="fl">'+flagImg(t)+'</span><span class="tn">'+t+'</span><span class="go">‹ مبارياته</span></div>';
+    }).join("");
+    return '<div class="grp"><span class="big">'+g+'</span><h3><span class="ltr">'+g+'</span>المجموعة '+g+'</h3>'+rows
+      +'<button class="stbtn" data-st="'+g+'">📊 الترتيب المباشر للمجموعة '+g+'</button>'
+      +'<div id="st-'+g+'"></div>'
+      +'<button class="gbtn" data-gomatches-group="'+g+'">📅 عرض مباريات المجموعة '+g+'</button></div>';
   }).join("");
 }
 
@@ -1846,68 +1487,6 @@ buildDays();
 applyFilters();
 renderGroups();
 renderKO();
-
-// زر تحديث النتائج من ESPN
-document.getElementById("refreshAllStandings").addEventListener("click", async function(){
-  var btn = this;
-  var icon = document.getElementById("refreshIcon");
-  var status = document.getElementById("refreshStatus");
-  btn.disabled = true;
-  icon.innerHTML = '<span class="spin"></span>';
-  status.textContent = '⏳ جاري جلب النتائج...';
-  try{
-    // جيب ترتيب كل المجموعات من ESPN
-    var r = await fetch(ESPN_ST);
-    if(!r.ok) throw new Error("espn");
-    var data = await r.json();
-    var kids = data.children || [];
-    var got = 0;
-    ST_CACHE = {};
-    kids.forEach(function(ch){
-      var mt = /group\s*([A-L])/i.exec((ch.name||"") + " " + (ch.abbreviation||""));
-      if(!mt) return;
-      var g = mt[1].toUpperCase();
-      var ents = ((ch.standings||{}).entries) || [];
-      if(!ents.length) return;
-      var rows = ents.map(function(en){
-        var st = {};
-        (en.stats||[]).forEach(function(x){ if(x && x.name) st[x.name] = x; });
-        function v(names, dv){
-          for(var i=0;i<names.length;i++){
-            var o = st[names[i]];
-            if(o) return dv ? (o.displayValue!=null?o.displayValue:o.value) : (o.value!=null?o.value:o.displayValue);
-          }
-          return 0;
-        }
-        return {
-          t: (en.team||{}).displayName || "",
-          p: v(["gamesPlayed"]),
-          w: v(["wins"]),
-          d: v(["ties","draws"]),
-          l: v(["losses"]),
-          gf: v(["goalsFor","pointsFor"]),
-          ga: v(["goalsAgainst","pointsAgainst"]),
-          gd: v(["pointDifferential","goalDifferential","differential"], true),
-          pts: v(["points"])
-        };
-      });
-      ST_CACHE[g] = { rows: rows };
-      got++;
-    });
-    if(!got) throw new Error("no-data");
-    // أعد بناء المجموعات
-    renderGroups();
-    status.innerHTML = '<span style="color:var(--green,#2ecc71)">✅ تم التحديث — ' + got + ' مجموعة</span>';
-    icon.textContent = '✓';
-    setTimeout(function(){ icon.textContent = '🔄'; }, 3000);
-  }catch(e){
-    status.innerHTML = '<span style="color:#ff6b76">⚠️ تعذّر الاتصال بـ ESPN — تحقق من الإنترنت</span>';
-    icon.textContent = '⚠️';
-  }finally{
-    btn.disabled = false;
-  }
-});
-
 renderStadiums();
 renderHero();
 renderHomeLists();
