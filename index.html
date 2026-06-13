@@ -18,48 +18,9 @@
   --card:rgba(255,255,255,.05); --card2:rgba(255,255,255,.08);
   --line:rgba(255,255,255,.10);
   --txt:#eef2ff; --mut:#94a0c6; --dim:#5e6a93;
-  --txt-2:#cdd6f4; --txt-3:#c4cdee; --txt-4:#dbe3ff;
   --gold:#f0c24b; --gold2:#ffe09a;
   --red:#e84855; --blue:#3d8bff; --green:#2ecc71;
   --nav-h:64px;
-  --hero-bg1:#101737; --hero-bg2:#090d22;
-  --hdr-bg:rgba(6,10,28,.78);
-  --filters-bg:rgba(6,10,28,.86);
-  --bn-bg:rgba(8,12,30,.92);
-  --inp-color:#eef2ff;
-  --shadow-card:0 18px 50px -22px rgba(0,0,0,.85);
-  --shadow-glow:0 0 36px -10px rgba(240,194,75,.4);
-  --shadow-live:0 0 24px -8px rgba(255,71,87,.45);
-  --on-color:#0b0f24;
-  --live-color:#ff6b76;
-  --chip-bg:rgba(255,255,255,.06);
-  --border-dash:rgba(255,255,255,.07);
-  --border-dash-2:rgba(255,255,255,.06);
-  --video-btn-bg:rgba(232,72,85,.25);
-  --video-btn-bg2:rgba(232,72,85,.08);
-}
-[data-theme="light"]{
-  --bg:#f0f3f9; --bg2:#ffffff;
-  --card:rgba(0,0,0,.04); --card2:rgba(0,0,0,.06);
-  --line:rgba(0,0,0,.10);
-  --txt:#0a0e22; --mut:#5a6582; --dim:#97a0b9;
-  --txt-2:#1a2038; --txt-3:#0a0e22; --txt-4:#1a2038;
-  --gold:#b8860b; --gold2:#d9a02c;
-  --hero-bg1:#ffffff; --hero-bg2:#f7f9fd;
-  --hdr-bg:rgba(255,255,255,.85);
-  --filters-bg:rgba(255,255,255,.92);
-  --bn-bg:rgba(255,255,255,.97);
-  --inp-color:#0a0e22;
-  --shadow-card:0 18px 50px -22px rgba(0,0,0,.15);
-  --shadow-glow:0 0 36px -10px rgba(184,134,11,.30);
-  --shadow-live:0 0 24px -8px rgba(232,72,85,.25);
-  --on-color:#ffffff;
-  --live-color:#d63d4a;
-  --chip-bg:rgba(0,0,0,.05);
-  --border-dash:rgba(0,0,0,.10);
-  --border-dash-2:rgba(0,0,0,.08);
-  --video-btn-bg:rgba(232,72,85,.15);
-  --video-btn-bg2:rgba(232,72,85,.05);
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 html{scroll-behavior:smooth;}
@@ -71,9 +32,9 @@ body{
 }
 .orbs{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;}
 .orbs span{position:absolute; width:46vw; height:46vw; min-width:300px; min-height:300px; border-radius:50%; filter:blur(95px); opacity:.16; animation:drift 26s ease-in-out infinite alternate;}
-.orbs span:nth-child(1){background:var(--red,#e84855); top:-12%; right:-10%;}
-.orbs span:nth-child(2){background:var(--green,#2ecc71); top:32%; left:-16%; animation-delay:-8s;}
-.orbs span:nth-child(3){background:var(--blue,#3d8bff); bottom:-14%; right:18%; animation-delay:-16s;}
+.orbs span:nth-child(1){background:var(--red); top:-12%; right:-10%;}
+.orbs span:nth-child(2){background:var(--green); top:32%; left:-16%; animation-delay:-8s;}
+.orbs span:nth-child(3){background:var(--blue); bottom:-14%; right:18%; animation-delay:-16s;}
 @keyframes drift{from{transform:translate(0,0) scale(1);}to{transform:translate(6vw,-5vh) scale(1.12);}}
 @media (prefers-reduced-motion:reduce){
   .orbs span{animation:none;}
@@ -114,16 +75,16 @@ main{position:relative; z-index:1; max-width:760px; margin:0 auto; padding:16px 
   position:relative; overflow:hidden; border-radius:22px;
   border:1px solid rgba(240,194,75,.28);
   background:
-    radial-gradient(120% 150% at 85% -20%, var(--hero-rad-1, rgba(240,194,75,.16)), transparent 55%),
-    radial-gradient(100% 130% at 0% 110%, var(--hero-rad-2, rgba(61,139,255,.14)), transparent 55%),
-    linear-gradient(160deg,var(--hero-bg1,#101737),var(--hero-bg2,#090d22) 65%);
+    radial-gradient(120% 150% at 85% -20%, rgba(240,194,75,.16), transparent 55%),
+    radial-gradient(100% 130% at 0% 110%, rgba(61,139,255,.14), transparent 55%),
+    linear-gradient(160deg,#101737,#090d22 65%);
   padding:20px 18px 18px;
   box-shadow:0 18px 50px -22px rgba(0,0,0,.85);
 }
 .hero::after{content:"🏆"; position:absolute; left:-14px; bottom:-28px; font-size:130px; opacity:.06; transform:rotate(-12deg); pointer-events:none;}
 .hero .eyebrow{display:flex; align-items:center; gap:8px; font-size:12px; font-weight:600; color:var(--gold); letter-spacing:.5px;}
 .hero .eyebrow .dot{width:8px; height:8px; border-radius:50%; background:var(--gold); box-shadow:0 0 0 0 rgba(240,194,75,.6); animation:pulse 1.8s infinite;}
-.hero .eyebrow.is-live{color:var(--live-color,#ff6b76);}
+.hero .eyebrow.is-live{color:#ff6b76;}
 .hero .eyebrow.is-live .dot{background:#ff4757; box-shadow:0 0 0 0 rgba(255,71,87,.6);}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(240,194,75,.55);}70%{box-shadow:0 0 0 11px rgba(240,194,75,0);}100%{box-shadow:0 0 0 0 rgba(240,194,75,0);}}
 .hero .duel{display:flex; align-items:center; justify-content:space-between; gap:8px; margin:16px 0 6px;}
@@ -276,7 +237,7 @@ main{position:relative; z-index:1; max-width:760px; margin:0 auto; padding:16px 
 .gl-empty{font-size:12px; color:var(--mut); text-align:center; padding:12px 8px; background:rgba(255,255,255,.03); border:1px dashed var(--line); border-radius:12px;}
 
 .m-tv{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:9px; padding-top:8px; border-top:1px dashed var(--line); font-size:11.5px; color:var(--mut);}
-.m-tv .bein{color:var(--gold,#cfa8ff); font-weight:700;}
+.m-tv .bein{color:#cfa8ff; font-weight:700;}
 .m-tv .chev{color:var(--dim); font-size:10.5px; transition:transform .25s; flex-shrink:0;}
 .match.open .m-tv .chev{transform:rotate(180deg);}
 .m-ext{display:none; margin-top:11px; padding-top:11px; border-top:1px solid var(--line);}
@@ -294,7 +255,7 @@ main{position:relative; z-index:1; max-width:760px; margin:0 auto; padding:16px 
 .lu-col li{counter-increment:p; font-size:11px; color:#c4cdee; padding:3px 0; border-bottom:1px dashed rgba(255,255,255,.06); display:flex; gap:7px; line-height:1.5;}
 .lu-col li::before{content:counter(p); min-width:16px; height:16px; border-radius:5px; background:rgba(240,194,75,.15); color:var(--gold2); font-size:9.5px; font-weight:700; display:grid; place-items:center; font-variant-numeric:tabular-nums; flex-shrink:0; margin-top:2px;}
 .lu-col li:last-child{border-bottom:none;}
-.lu-err{font-size:12px; color:var(--lu-err-color,#ffb1b8); background:rgba(232,72,85,.1); border:1px solid rgba(232,72,85,.35); border-radius:12px; padding:10px 12px; line-height:1.9;}
+.lu-err{font-size:12px; color:#ffb1b8; background:rgba(232,72,85,.1); border:1px solid rgba(232,72,85,.35); border-radius:12px; padding:10px 12px; line-height:1.9;}
 .lu-err a,.lu-alt{display:inline-block; margin-top:4px; color:var(--gold); font-weight:700; text-decoration:none; font-size:11.5px; background:none; border:none; font-family:inherit; cursor:pointer; padding:0;}
 .spin{display:inline-block; width:12px; height:12px; border:2px solid rgba(240,194,75,.3); border-top-color:var(--gold); border-radius:50%; animation:rot .8s linear infinite; vertical-align:-2px; margin-right:6px;}
 @keyframes rot{to{transform:rotate(360deg);}}
@@ -379,8 +340,8 @@ nav#bn button .ic{font-size:19px;}
 .vs .sc .num{font-family:"Changa",sans-serif; font-weight:800; font-size:22px; line-height:1.1; color:#fff;}
 .vs .sc .sep{color:var(--dim); font-weight:800; font-size:15px;}
 .vs .scst{display:block; font-size:9.5px; margin-top:2px; color:var(--mut);}
-.vs .scst.lv{color:var(--live-color,#ff6b76); font-weight:700;}
-.scbtn{margin-top:4px; background:rgba(232,72,85,.14); border:1px solid rgba(232,72,85,.45); color:var(--live-color,#ff9aa3); font-family:inherit; font-size:9.5px; font-weight:700; border-radius:99px; padding:2px 8px; cursor:pointer; white-space:nowrap;}
+.vs .scst.lv{color:#ff6b76; font-weight:700;}
+.scbtn{margin-top:4px; background:rgba(232,72,85,.14); border:1px solid rgba(232,72,85,.45); color:#ff9aa3; font-family:inherit; font-size:9.5px; font-weight:700; border-radius:99px; padding:2px 8px; cursor:pointer; white-space:nowrap;}
 .scbtn:disabled{opacity:.6; cursor:wait;}
 .stbtn{width:100%; margin-top:8px; background:linear-gradient(135deg,rgba(61,139,255,.18),rgba(61,139,255,.05)); border:1px solid rgba(61,139,255,.45); color:#9cc3ff; font-family:inherit; font-size:11.5px; font-weight:700; border-radius:11px; padding:8px; cursor:pointer;}
 .stbtn:disabled{opacity:.6; cursor:wait;}
@@ -398,42 +359,6 @@ nav#bn button .ic{font-size:19px;}
 /* أعلام كصور */
 .flg{height:1em; width:auto; border-radius:.14em; box-shadow:0 1px 3px rgba(0,0,0,.45); vertical-align:-.12em;}
 
-.theme-toggle:hover{background:var(--card2); transform:scale(1.05)}
-.theme-toggle:active{transform:scale(.95)}
-#themeToggle.on{background:linear-gradient(135deg,#ffd966,#ffaa00); border-color:#ffaa00}
-#notifToggle.on{background:linear-gradient(135deg,rgba(46,204,113,.25),rgba(46,204,113,.05)); border-color:var(--green); color:#7ee2ab}
-#notifToggle.off{opacity:.5}
-.video-btn{width:100%; margin-top:8px; background:linear-gradient(135deg,var(--video-btn-bg),var(--video-btn-bg2)); border:1px solid rgba(232,72,85,.55); color:#ff9aa3; font-family:inherit; font-size:12.5px; font-weight:700; border-radius:12px; padding:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; text-decoration:none}
-.video-btn:active{transform:scale(.98)}
-.video-btn:disabled{opacity:.6; cursor:wait}
-.video-frame{margin-top:8px; position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px; background:#000; border:1px solid var(--line)}
-.video-frame iframe{position:absolute; top:0; left:0; width:100%; height:100%; border:0}
-.video-empty{padding:14px; text-align:center; color:var(--mut); font-size:12px; background:var(--chip-bg); border:1px dashed var(--line); border-radius:12px; line-height:1.9}
-.video-empty .e{font-size:28px; display:block; margin-bottom:6px}
-
-
-/* Light theme fixes إضافية */
-[data-theme="light"] body{background:var(--bg)}
-[data-theme="light"] .orbs span{opacity:.06}
-[data-theme="light"] .hero{box-shadow:0 18px 50px -22px rgba(0,0,0,.15)}
-[data-theme="light"] .stat{box-shadow:0 1px 4px rgba(0,0,0,.05)}
-[data-theme="light"] .match{box-shadow:0 1px 4px rgba(0,0,0,.04)}
-[data-theme="light"] input, [data-theme="light"] select{color:var(--inp-color)}
-[data-theme="light"] input::placeholder{color:#97a0b9}
-[data-theme="light"] .trow .tn, [data-theme="light"] .tag, [data-theme="light"] .team .tn, [data-theme="light"] .m-bot, [data-theme="light"] .hero .meta, [data-theme="light"] .sec-t .cnt{color:var(--txt)}
-[data-theme="light"] .tag{background:rgba(0,0,0,.04); color:var(--mut)}
-[data-theme="light"] .day{background:rgba(0,0,0,.04); border-color:rgba(0,0,0,.10)}
-[data-theme="light"] .day .d{color:var(--txt)}
-[data-theme="light"] .pill{background:rgba(0,0,0,.04); color:var(--mut)}
-[data-theme="light"] .search, [data-theme="light"] .sel-row select{background:rgba(0,0,0,.05)}
-[data-theme="light"] .sttbl th{color:#5a6582}
-[data-theme="light"] .sttbl td{color:#0a0e22}
-[data-theme="light"] .sttbl tr.q .pos{background:rgba(46,204,113,.20); color:#1f7a3e}
-[data-theme="light"] .sttbl tr.m3 .pos{background:rgba(184,134,11,.18); color:#7a5a08}
-[data-theme="light"] .sttbl .pos{background:rgba(0,0,0,.08); color:#5a6582}
-[data-theme="light"] .sttbl td.pts{color:#0a0e22}
-[data-theme="light"] .day.on{color:#0b0f24; font-weight:800}
-
 </style>
 </head>
 <body>
@@ -442,167 +367,7 @@ nav#bn button .ic{font-size:19px;}
   <h2 style="margin:6px 0;font-size:20px">جدول كأس العالم 2026 التفاعلي</h2>
   <p style="margin:0;color:#94a0c6;font-size:14px;line-height:2;max-width:340px">أنت تشاهد معاينة فقط — جهازك لم يشغّل الكود التفاعلي.<br>افتح الجدول عبر <b style="color:#f0c24b">الرابط المباشر</b> الذي وصلك، أو افتح الملف بمتصفح Chrome.</p>
 </div>
-<script>try{document.getElementById("jsband").style.display="none";}catch(e){}
-
-/* ================= Notifications + Vibration ================= */
-var NOTIF_STATE=JSON.parse(localStorage.getItem("wc2026_notif")||"{}");
-function canVibrate(){return "vibrate" in navigator;}
-function buzz(pattern){if(canVibrate())try{navigator.vibrate(pattern);}catch(e){}}
-function notify(title, body, vibe){
-  if(vibe!==false) buzz(vibe||[100,50,100]);
-  if(typeof toast==="function")toast("🔔 "+title);
-  if(NOTIF_STATE.enabled && "Notification" in window && Notification.permission==="granted"){
-    try{new Notification(title,{body:body,icon:"assets/icons/icon.svg",tag:"wc2026"});}catch(e){}
-  }
-}
-async function requestNotifPermission(){
-  if(!("Notification" in window))return;
-  try{
-    var p=await Notification.requestPermission();
-    var btn=document.getElementById("notifToggle");
-    if(p==="granted"){
-      NOTIF_STATE.enabled=true;
-      btn.textContent="🔔";btn.classList.add("on");btn.classList.remove("off");
-      if(typeof toast==="function")toast("✅ الإشعارات مفعّلة");
-      setTimeout(function(){notify("كأس العالم 2026","الإشعارات مفعّلة! سننبهك قبل المباريات 🔔",[200,80,200]);},1000);
-    } else {
-      NOTIF_STATE.enabled=false;
-      btn.textContent="🔕";btn.classList.add("off");btn.classList.remove("on");
-    }
-    localStorage.setItem("wc2026_notif",JSON.stringify(NOTIF_STATE));
-  }catch(e){}
-}
-(function(){
-  var btn=document.getElementById("notifToggle");
-  if(!btn || !("Notification" in window))return;
-  if(Notification.permission==="granted" && NOTIF_STATE.enabled){btn.classList.add("on");}
-  else if(Notification.permission==="denied"){btn.classList.add("off");btn.textContent="🔕";}
-  btn.addEventListener("click",requestNotifPermission);
-})();
-
-/* ================= Match Notifications Scheduler ================= */
-var _notifiedMatches={};
-setInterval(function(){
-  if(!M)return;
-  M.forEach(function(m){
-    if(!m.d || _notifiedMatches[m.n]) return;
-    var st=dateObj(m).getTime();
-    var diff=st-Date.now();
-    if(diff>0 && diff<=15*60000 && !_notifiedMatches["pre-"+m.n]){
-      _notifiedMatches["pre-"+m.n]=true;
-      notify("⏰ تذكير: مباراة بعد "+Math.round(diff/60000)+" دقيقة",m.h+" ضد "+m.a, [80,40,80]);
-    }
-    if(diff<=0 && diff>=-60000 && !_notifiedMatches["start-"+m.n]){
-      _notifiedMatches["start-"+m.n]=true;
-      _notifiedMatches[m.n]=true;
-      notify("⚽ بدأت المباراة الآن!",m.h+" ضد "+m.a, [200,80,200,80,200]);
-    }
-  });
-},60000);
-
-/* ================= Score Change Detection ================= */
-var _lastScores={};
-setInterval(function(){
-  if(!SC_CACHE)return;
-  Object.keys(SC_CACHE).forEach(function(n){
-    var s=SC_CACHE[n];
-    if(!s||!s.found) return;
-    var key=n+":"+s.sh+":"+s.sa;
-    if(_lastScores[n] && _lastScores[n]!==key){
-      var m=getM(+n);
-      if(m){
-        var prev=_lastScores[n].split(":");
-        if(parseInt(s.sh)>parseInt(prev[1]) || parseInt(s.sa)>parseInt(prev[2])){
-          buzz([300,80,300,80,500]);
-          var scorer=parseInt(s.sh)>parseInt(prev[1])?m.h:m.a;
-          notify("⚽ هدف! "+scorer,"النتيجة الآن "+s.sh+" : "+s.sa+" · "+m.h+" ضد "+m.a, [300,80,300,80,500]);
-        }
-      }
-    }
-    _lastScores[n]=key;
-  });
-},10000);
-
-/* ================= Video (beIN SPORTS) ================= */
-var BEIN_CHANNEL_ID="UCJUCcJUeh0Cz2xyKwkw5Q1w";
-var VIDEO_CACHE={};
-var BEIN_FEED_CACHE=null, BEIN_FEED_TS=0;
-function decodeXmlEntities(s){return s.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&#(\d+);/g,function(m,n){return String.fromCharCode(parseInt(n,10));});}
-function parseRssXml(xmlText){
-  var entries=[], entryRe=/<entry>([\s\S]*?)<\/entry>/g, m;
-  while((m=entryRe.exec(xmlText))!==null){
-    var block=m[1];
-    var idM=block.match(/<yt:videoId>([^<]+)<\/yt:videoId>/);
-    var titleM=block.match(/<title>([^<]+)<\/title>/);
-    if(idM && titleM) entries.push({id:idM[1].trim(),title:decodeXmlEntities(titleM[1].trim())});
-  }
-  return entries;
-}
-async function loadBeinFeed(){
-  if(BEIN_FEED_CACHE && (Date.now()-BEIN_FEED_TS)<1800000) return BEIN_FEED_CACHE;
-  try{
-    var r=await fetch("https://www.youtube.com/feeds/videos.xml?channel_id="+BEIN_CHANNEL_ID);
-    if(r.ok){
-      var txt=await r.text();
-      var p=parseRssXml(txt);
-      if(p.length>0){BEIN_FEED_CACHE=p;BEIN_FEED_TS=Date.now();return p;}
-    }
-  }catch(e){}
-  return [];
-}
-function normalizeAr(s){return (s||"").replace(/[أإآا]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه").replace(/[\u064B-\u0652]/g,"").replace(/\s+/g," ").trim();}
-function findBeinVideo(feed,m){
-  var h=normalizeAr(m.h).split(" ")[0], a=normalizeAr(m.a).split(" ")[0];
-  for(var i=0;i<feed.length;i++){var t=normalizeAr(feed[i].title);if(t.indexOf(h)>=0 && t.indexOf(a)>=0) return feed[i];}
-  return null;
-}
-async function loadMatchVideo(n,btn){
-  var m=getM(n);if(!m)return;
-  var box=document.getElementById("video-"+n);if(!box)return;
-  if(btn){btn.disabled=true;btn.innerHTML='<span class="spin"></span> جاري البحث في beIN SPORTS…';}
-  if(VIDEO_CACHE[n]){renderVideo(n,VIDEO_CACHE[n]);return;}
-  var feed=await loadBeinFeed();
-  if(feed.length===0){
-    if(btn){btn.disabled=false;btn.innerHTML='🎬 شاهد على YouTube';}
-    var q=encodeURIComponent(m.h+" ضد "+m.a+" beIN SPORTS ملخص");
-    box.innerHTML='<div class="video-empty"><span class="e">🎬</span>ملخص المباراة على YouTube<div style="display:flex;flex-direction:column;gap:6px;margin-top:10px"><a class="video-btn" href="https://www.youtube.com/results?search_query='+q+'" target="_blank" rel="noopener" style="text-decoration:none;display:block">🔍 ابحث "'+m.h+' ضد '+m.a+'"</a><a class="video-btn" href="https://www.youtube.com/@beINSPORTS/videos" target="_blank" rel="noopener" style="text-decoration:none;display:block">📺 كل ملخصات beIN</a></div></div>';
-    return;
-  }
-  var v=findBeinVideo(feed,m);
-  if(v){VIDEO_CACHE[n]=v;renderVideo(n,v);}
-  else{
-    if(btn){btn.disabled=false;btn.innerHTML='🎬 ملخصات beIN';}
-    var list=feed.slice(0,5).map(function(x){return '<a href="https://www.youtube.com/watch?v='+x.id+'" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line);text-decoration:none;color:var(--txt)"><span style="font-size:18px;flex-shrink:0">▶️</span><span style="flex:1;font-size:11.5px;line-height:1.5">'+x.title+'</span></a>';}).join("");
-    box.innerHTML='<div class="video-empty"><span class="e">🎬</span>أحدث ملخصات beIN SPORTS:<div style="text-align:right;margin-top:6px">'+list+'</div></div>';
-  }
-}
-function renderVideo(n,v){
-  var box=document.getElementById("video-"+n);if(!box)return;
-  box.innerHTML='<div class="video-frame"><iframe src="https://www.youtube.com/embed/'+v.id+'?rel=0&modestbranding=1&hl=ar" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div><div style="font-size:11.5px;color:var(--mut);text-align:center;margin-top:6px;line-height:1.6">▶ '+v.title+'<br><a href="https://www.youtube.com/watch?v='+v.id+'" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;font-size:10.5px">↗ افتح على YouTube</a></div><div style="text-align:center;font-size:10px;color:var(--dim);margin-top:3px">📺 beIN SPORTS · الناقل الحصري</div>';
-}
-
-/* ================= تعديل click handler لإضافة زر الفيديو ================= */
-(function(){
-  // نبحث عن دالة matchCard ونضيف الفيديو تلقائياً
-  // الطريقة: نراقب التغيرات على .match ونضيف الزر
-  var observer=new MutationObserver(function(){
-    document.querySelectorAll(".match.done .m-ext").forEach(function(ext){
-      if(!ext.dataset.vidInjected){
-        ext.dataset.vidInjected="1";
-        var card=ext.closest(".match");
-        if(!card)return;
-        var mn=card.dataset.mn;
-        var container=document.createElement("div");
-        container.id="video-"+mn;
-        container.innerHTML='<button class="video-btn" data-video="'+mn+'">🎬 شاهد أهداف المباراة</button>';
-        ext.insertBefore(container, ext.firstChild);
-      }
-    });
-  });
-  observer.observe(document.body,{subtree:true,childList:true});
-})();
-
-</script>
+<script>try{document.getElementById("jsband").style.display="none";}catch(e){}</script>
 <div class="orbs"><span></span><span></span><span></span></div>
 
 <header>
