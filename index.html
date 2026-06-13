@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="dark">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -398,14 +398,6 @@ nav#bn button .ic{font-size:19px;}
 /* أعلام كصور */
 .flg{height:1em; width:auto; border-radius:.14em; box-shadow:0 1px 3px rgba(0,0,0,.45); vertical-align:-.12em;}
 
-
-/* Theme & Notification toggles */
-.theme-toggle{
-  width:34px; height:34px; border-radius:50%; border:1px solid var(--line);
-  background:var(--card); color:var(--txt); font-size:16px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  transition:all .2s; flex-shrink:0; padding:0; margin-right:6px;
-}
 .theme-toggle:hover{background:var(--card2); transform:scale(1.05)}
 .theme-toggle:active{transform:scale(.95)}
 #themeToggle.on{background:linear-gradient(135deg,#ffd966,#ffaa00); border-color:#ffaa00}
@@ -442,30 +434,6 @@ nav#bn button .ic{font-size:19px;}
 [data-theme="light"] .sttbl td.pts{color:#0a0e22}
 [data-theme="light"] .day.on{color:#0b0f24; font-weight:800}
 
-/* ==== Light theme strong overrides ==== */
-[data-theme="light"]{
-  --bg:#f0f3f9 !important; --bg2:#ffffff !important;
-  --card:rgba(0,0,0,.04) !important; --card2:rgba(0,0,0,.06) !important;
-  --line:rgba(0,0,0,.10) !important;
-  --txt:#0a0e22 !important; --mut:#5a6582 !important; --dim:#97a0b9 !important;
-  --txt-2:#1a2038 !important; --txt-3:#0a0e22 !important; --txt-4:#1a2038 !important;
-  --gold:#b8860b !important; --gold2:#d9a02c !important;
-  --hero-bg1:#ffffff !important; --hero-bg2:#f7f9fd !important;
-  --hdr-bg:rgba(255,255,255,.92) !important;
-  --filters-bg:rgba(255,255,255,.95) !important;
-  --bn-bg:rgba(255,255,255,.97) !important;
-  --inp-color:#0a0e22 !important;
-  --on-color:#ffffff !important;
-  --live-color:#d63d4a !important;
-  --shadow-card:0 18px 50px -22px rgba(0,0,0,.12) !important;
-  --shadow-glow:0 0 36px -10px rgba(184,134,11,.30) !important;
-  --shadow-live:0 0 24px -8px rgba(232,72,85,.20) !important;
-  --border-dash:rgba(0,0,0,.10) !important;
-  --border-dash-2:rgba(0,0,0,.08) !important;
-  --chip-bg:rgba(0,0,0,.05) !important;
-}
-
-
 </style>
 </head>
 <body>
@@ -475,22 +443,6 @@ nav#bn button .ic{font-size:19px;}
   <p style="margin:0;color:#94a0c6;font-size:14px;line-height:2;max-width:340px">أنت تشاهد معاينة فقط — جهازك لم يشغّل الكود التفاعلي.<br>افتح الجدول عبر <b style="color:#f0c24b">الرابط المباشر</b> الذي وصلك، أو افتح الملف بمتصفح Chrome.</p>
 </div>
 <script>try{document.getElementById("jsband").style.display="none";}catch(e){}
-
-/* ================= Theme Toggle ================= */
-function setTheme(t){
-  document.documentElement.dataset.theme=t;
-  localStorage.setItem("wc2026_theme",t);
-  var btn=document.getElementById("themeToggle");
-  if(btn){btn.textContent=t==="light"?"☀️":"🌙";btn.classList.toggle("on",t==="light");}
-}
-(function(){
-  var saved=localStorage.getItem("wc2026_theme") || "dark";
-  setTheme(saved);
-  document.getElementById("themeToggle").addEventListener("click",function(){
-    var cur=document.documentElement.dataset.theme||"dark";
-    setTheme(cur==="dark"?"light":"dark");
-  });
-})();
 
 /* ================= Notifications + Vibration ================= */
 var NOTIF_STATE=JSON.parse(localStorage.getItem("wc2026_notif")||"{}");
@@ -658,8 +610,6 @@ function renderVideo(n,v){
     <span class="cup">🏆</span>
     <h1>كأس العالم 2026<small>نسخة الجوال 📱 · بتوقيت الكويت</small></h1>
   </div>
-  <button class="theme-toggle" id="themeToggle" aria-label="تبديل الثيم" title="تبديل الثيم">🌙</button>
-  <button class="theme-toggle" id="notifToggle" aria-label="الإشعارات" title="تفعيل الإشعارات">🔔</button>
   <div class="hosts"><img class="flg" style="height:16px" src="https://flagcdn.com/h40/us.png" alt="🇺🇸" onerror="this.replaceWith(this.alt)"> <img class="flg" style="height:16px" src="https://flagcdn.com/h40/ca.png" alt="🇨🇦" onerror="this.replaceWith(this.alt)"> <img class="flg" style="height:16px" src="https://flagcdn.com/h40/mx.png" alt="🇲🇽" onerror="this.replaceWith(this.alt)"></div>
 </header>
 
