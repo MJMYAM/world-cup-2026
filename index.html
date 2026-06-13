@@ -369,6 +369,9 @@ nav#bn button .ic{font-size:19px;}
 .video-empty{padding:14px;text-align:center;color:var(--mut);font-size:12px;background:var(--chip-bg,rgba(255,255,255,.03));border:1px dashed var(--line);border-radius:12px;line-height:1.9}
 .video-empty .e{font-size:28px;display:block;margin-bottom:6px}
 
+
+.auto-update-dot{animation-name:autoPulse;animation-duration:2s;animation-iteration-count:infinite}
+@keyframes autoPulse{0%{box-shadow:0 0 0 0 rgba(46,204,113,.6)}70%{box-shadow:0 0 0 8px rgba(46,204,113,0)}100%{box-shadow:0 0 0 0 rgba(46,204,113,0)}}
 </style>
 </head>
 <body>
@@ -488,6 +491,89 @@ var _videoBtnObserver = new MutationObserver(function(){
 });
 _videoBtnObserver.observe(document.body, {subtree:true, childList:true});
 
+
+
+/* ================= التحديث التلقائي من ESPN ================= */
+async function autoUpdateFromESPN(){
+  var badge = document.getElementById("autoUpdateBadge");
+  var txt = document.getElementById("autoUpdateText");
+  if(!badge || !txt) return;
+  try{
+    txt.textContent = "⏳ جاري التحديث من ESPN...";
+    badge.style.opacity = "1";
+    var r = await fetch(ESPN_ST);
+    if(!r.ok) throw new Error("espn");
+    var data = await r.json();
+    var kids = data.children || [];
+    var got = 0;
+    ST_CACHE = {};
+    kids.forEach(function(ch){
+      var mt = /group\s*([A-L])/i.exec((ch.name||"") + " " + (ch.abbreviation||""));
+      if(!mt) return;
+      var g = mt[1].toUpperCase();
+      var ents = ((ch.standings||{}).entries) || [];
+      if(!ents.length) return;
+      var rows = ents.map(function(en){
+        var st = {};
+        (en.stats||[]).forEach(function(x){ if(x && x.name) st[x.name] = x; });
+        function v(names, dv){
+          for(var i=0;i<names.length;i++){
+            var o = st[names[i]];
+            if(o) return dv ? (o.displayValue!=null?o.displayValue:o.value) : (o.value!=null?o.value:o.displayValue);
+          }
+          return 0;
+        }
+        return {
+          t: (en.team||{}).displayName || "",
+          p: v(["gamesPlayed"]),
+          w: v(["wins"]),
+          d: v(["ties","draws"]),
+          l: v(["losses"]),
+          gf: v(["goalsFor","pointsFor"]),
+          ga: v(["goalsAgainst","pointsAgainst"]),
+          gd: v(["pointDifferential","goalDifferential","differential"], true),
+          pts: v(["points"])
+        };
+      });
+      ST_CACHE[g] = { rows: rows };
+      got++;
+    });
+    if(!got) throw new Error("no-data");
+    renderGroups();
+    // إخفاء الـbadge بعد ثانيتين لما يحدّث بنجاح
+    txt.innerHTML = "✅ تم التحديث التلقائي — " + got + " مجموعة (" + new Date().toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"}) + ")";
+    badge.style.background = "rgba(46,204,113,.15)";
+    setTimeout(function(){
+      badge.style.opacity = "0.6";
+    }, 2000);
+    setTimeout(function(){
+      badge.style.opacity = "0.4";
+    }, 8000);
+  }catch(e){
+    txt.textContent = "⚠️ تعذّر الاتصال — يعيد المحاولة خلال دقيقتين";
+    badge.style.background = "rgba(232,72,85,.08)";
+    badge.style.borderColor = "rgba(232,72,85,.25)";
+    badge.style.color = "#ff6b76";
+  }
+}
+
+// تحديث تلقائي كل دقيقتين (120 ثانية)
+setInterval(autoUpdateFromESPN, 120000);
+
+// تحديث فوري عند فتح التطبيق + كل ما يفتح تاب المجموعات
+(function(){
+  // أول تحديث بعد 3 ثواني من التحميل
+  setTimeout(autoUpdateFromESPN, 3000);
+  // تحديث عند فتح تاب المجموعات
+  var origGoTab = typeof goTab === "function" ? goTab : null;
+  if(origGoTab){
+    window.goTab = function(id){
+      origGoTab(id);
+      if(id === "groups") autoUpdateFromESPN();
+    };
+  }
+})();
+
 </script>
 <div class="orbs"><span></span><span></span><span></span></div>
 
@@ -553,8 +639,7 @@ _videoBtnObserver.observe(document.body, {subtree:true, childList:true});
   <!-- ============ GROUPS ============ -->
   <section id="tab-groups" class="tab">
     <div class="sec-t"><i></i>المجموعات الـ12 <span class="cnt">48 منتخبًا</span></div>
-  <button class="refresh-btn" id="refreshAllStandings" style="width:100%;margin-top:10px;background:linear-gradient(135deg,var(--green,#2ecc71),#27ae60);border:0;color:#fff;font-family:inherit;font-size:13px;font-weight:700;border-radius:12px;padding:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><span id="refreshIcon">🔄</span><span>تحديث النتائج من ESPN</span></button>
-  <div id="refreshStatus" style="text-align:center;font-size:11px;color:var(--mut);margin-top:6px;min-height:14px"></div>
+  <div id="autoUpdateBadge" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;padding:7px 10px;background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.25);border-radius:10px;font-size:11px;color:var(--green,#2ecc71)"><span class="auto-update-dot" style="width:6px;height:6px;border-radius:50%;background:var(--green,#2ecc71);box-shadow:0 0 0 0 rgba(46,204,113,.6);animation:autoPulse 2s infinite"></span><span id="autoUpdateText">⏳ جاري التحديث من ESPN...</span></div>
     <div class="ggrid" id="groupGrid"></div>
   </section>
 
